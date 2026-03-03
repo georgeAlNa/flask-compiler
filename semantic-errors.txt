@@ -1,0 +1,7 @@
+Error:
+├─ Type: SEMANTIC
+├─ Message: Missing required 'template' in route definition
+├─ Details: Flask route must have a Jinja2 template defined
+├─ Location: Line 100, Column 0
+└─--------------------------------------------------
+
