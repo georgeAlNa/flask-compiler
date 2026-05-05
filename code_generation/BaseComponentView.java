@@ -5,8 +5,6 @@ import java.util.List;
 
 public abstract class BaseComponentView implements View {
 
-    protected abstract String getSelector();
-
     protected abstract String getClassName();
 
     protected abstract String generateTemplate();

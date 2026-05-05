@@ -84,8 +84,8 @@ pyExpression
 
 pyAtom
     : NOT pyAtom
-    | IDENTIFIER LPAREN pyInner? RPAREN
-    | IDENTIFIER DOT IDENTIFIER LPAREN pyInner? RPAREN
+    | IDENTIFIER LPAREN pyInner RPAREN
+    | IDENTIFIER DOT IDENTIFIER LPAREN pyInner RPAREN
     | IDENTIFIER DOT IDENTIFIER LSQBRACKET pyInner RSQBRACKET
     | IDENTIFIER DOT IDENTIFIER
     | IDENTIFIER
@@ -93,9 +93,9 @@ pyAtom
     | TRIPLE_QUOTE_STRING
     | NUMBER
     | NONE | NULL | TRUE | FALSE
-    | LPAREN pyInner? RPAREN
-    | LSQBRACKET pyInner? RSQBRACKET
-    | LCURLEBRACE pyInner? RCURLEBRACE
+    | LPAREN pyInner RPAREN
+    | LSQBRACKET pyInner RSQBRACKET
+    | LCURLEBRACE pyInner RCURLEBRACE
     ;
 
 pyOp
@@ -108,9 +108,9 @@ pyOp
 // ─── Matches anything with balanced brackets (for function args, etc.) ────
 pyInner
     : ( ~(LPAREN | RPAREN | LSQBRACKET | RSQBRACKET | LCURLEBRACE | RCURLEBRACE)
-      | LPAREN pyInner? RPAREN
-      | LSQBRACKET pyInner? RSQBRACKET
-      | LCURLEBRACE pyInner? RCURLEBRACE
+            | LPAREN pyInner RPAREN
+            | LSQBRACKET pyInner RSQBRACKET
+            | LCURLEBRACE pyInner RCURLEBRACE
       )*
     ;
 

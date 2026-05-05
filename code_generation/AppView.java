@@ -15,11 +15,6 @@ public class AppView extends BaseComponentView {
     }
 
     @Override
-    protected String getSelector() {
-        return "app-root";
-    }
-
-    @Override
     protected String getClassName() {
         return "App";
     }

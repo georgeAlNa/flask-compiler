@@ -15,11 +15,6 @@ public class ProductsListView extends BaseComponentView {
     }
 
     @Override
-    protected String getSelector() {
-        return "app-products";
-    }
-
-    @Override
     protected String getClassName() {
         return "ProductsList";
     }

@@ -15,11 +15,6 @@ public class ProductDetailView extends BaseComponentView {
     }
 
     @Override
-    protected String getSelector() {
-        return "app-detail";
-    }
-
-    @Override
     protected String getClassName() {
         return "ProductDetail";
     }
