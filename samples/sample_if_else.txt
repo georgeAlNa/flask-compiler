@@ -1,0 +1,24 @@
+from flask import Flask, render_template_string
+
+app = Flask(__name__)
+
+
+@app.route('/status')
+def status():
+    isActive = True
+
+    template = """
+    <section>
+        {% if isActive %}
+        <p>Active</p>
+        {% else %}
+        <p>Inactive</p>
+        {% endif %}
+    </section>
+    """
+
+    return render_template_string(template, isActive=isActive)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

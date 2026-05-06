@@ -1,0 +1,33 @@
+from flask import Flask, render_template_string
+
+app = Flask(__name__)
+
+
+@app.route('/broken')
+def broken():
+    title = "Broken"
+
+    template = """
+    <h1>{{ title }}</h1>
+    <p>{{ missingVar }}</p>
+    {% for row in unknownList %}
+    <span>{{ row }}</span>
+    {% endfor %}
+    """
+
+    return render_template_string(template, title=title)
+
+
+@app.route('/broken')
+def broken_duplicate():
+    label = "Duplicate"
+
+    template = """
+    <p>{{ label }}</p>
+    """
+
+    return render_template_string(template, label=label)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

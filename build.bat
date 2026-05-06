@@ -1,6 +1,14 @@
 @echo off
 set ANTLR_JAR=antlr4-4.13.1-complete.jar
 set GEN_DIR=FlaskGen
+set SAMPLE=samples\sample.txt
+rem set SAMPLE=samples\sample_basic.txt
+rem set SAMPLE=samples\sample_routes_nav.txt
+rem set SAMPLE=samples\sample_for_loop.txt
+rem set SAMPLE=samples\sample_if_else.txt
+rem set SAMPLE=samples\sample_methods_post.txt
+rem set SAMPLE=samples\sample_extends_include_set.txt
+rem set SAMPLE=samples\sample_errors.txt
 
 echo ========================================
 echo  Flask Compiler - Build Script (Windows)
@@ -32,7 +40,7 @@ echo.
 echo [3/3] Running Flask Compiler...
 echo ========================================
 
-java -cp "out;%ANTLR_JAR%" Main
+java -cp "out;%ANTLR_JAR%" Main "%SAMPLE%"
 
 echo.
 echo ========================================

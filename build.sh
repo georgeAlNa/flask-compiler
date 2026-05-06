@@ -2,6 +2,14 @@
 
 ANTLR_JAR="antlr4-4.13.1-complete.jar"
 GEN_DIR="FlaskGen"
+SAMPLE="samples/sample.txt"
+# SAMPLE="samples/sample_basic.txt"
+# SAMPLE="samples/sample_routes_nav.txt"
+# SAMPLE="samples/sample_for_loop.txt"
+# SAMPLE="samples/sample_if_else.txt"
+# SAMPLE="samples/sample_methods_post.txt"
+# SAMPLE="samples/sample_extends_include_set.txt"
+# SAMPLE="samples/sample_errors.txt"
 
 echo "========================================"
 echo " Flask Compiler - Build Script"
@@ -46,8 +54,8 @@ echo "[3/3] Running Flask Compiler..."
 echo "========================================"
 
 # Try both classpath separators
-java -cp "out:$ANTLR_JAR" Main 2>/dev/null || \
-java -cp "out;$ANTLR_JAR" Main
+java -cp "out:$ANTLR_JAR" Main "$SAMPLE" 2>/dev/null || \
+java -cp "out;$ANTLR_JAR" Main "$SAMPLE"
 
 echo ""
 echo "========================================"

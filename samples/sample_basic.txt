@@ -1,0 +1,21 @@
+from flask import Flask, render_template_string
+
+app = Flask(__name__)
+
+
+@app.route('/')
+def home():
+    title = "Hello Flask"
+
+    template = """
+    <section>
+        <h1>{{ title }}</h1>
+        <p>Welcome to the basic sample.</p>
+    </section>
+    """
+
+    return render_template_string(template, title=title)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
