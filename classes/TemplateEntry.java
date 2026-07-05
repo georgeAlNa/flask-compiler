@@ -1,6 +1,6 @@
 package classes;
 
-public class TemplateEntry implements MetadataEntry {
+public class TemplateEntry extends MetadataEntry {
 
     private InlineTemplate inlineTemplate;
 
@@ -23,3 +23,4 @@ public class TemplateEntry implements MetadataEntry {
                 "}";
     }
 }
+

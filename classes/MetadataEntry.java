@@ -1,4 +1,5 @@
 package classes;
 
-public interface MetadataEntry extends ASTNode {
+public abstract class MetadataEntry extends ASTNode {
 }
+

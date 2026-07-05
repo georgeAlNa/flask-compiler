@@ -1,6 +1,6 @@
 package classes;
 
-public class HtmlContent implements ASTNode {
+public class HtmlContent extends ASTNode {
 
     private String text;
 
@@ -26,3 +26,4 @@ public class HtmlContent implements ASTNode {
                 "\n}";
     }
 }
+

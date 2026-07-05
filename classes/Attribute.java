@@ -1,6 +1,6 @@
 package classes;
 
-public class Attribute implements ASTNode {
+public class Attribute extends ASTNode {
 
     private String name;
     private String value;
@@ -30,3 +30,4 @@ public class Attribute implements ASTNode {
         return sb.toString();
     }
 }
+

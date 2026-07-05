@@ -1,6 +1,6 @@
 package classes;
 
-public class MethodBody implements ASTNode {
+public class MethodBody extends ASTNode {
 
     private Statement[] statements = new Statement[0];
 
@@ -24,3 +24,4 @@ public class MethodBody implements ASTNode {
         return sb.toString();
     }
 }
+

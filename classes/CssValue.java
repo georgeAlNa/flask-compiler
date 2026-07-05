@@ -1,6 +1,6 @@
 package classes;
 
-public class CssValue implements ASTNode {
+public class CssValue extends ASTNode {
 
     private String percentageValue;
     private String numberValue;
@@ -67,3 +67,4 @@ public class CssValue implements ASTNode {
         return alphabetValue != null ? alphabetValue : "";
     }
 }
+

@@ -1,6 +1,6 @@
 package classes;
 
-public class Statement implements ASTNode {
+public class Statement extends ASTNode {
 
     private String expression;
     private FunctionCall functionCall;
@@ -29,3 +29,4 @@ public class Statement implements ASTNode {
                 "\n}";
     }
 }
+

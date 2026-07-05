@@ -1,6 +1,6 @@
 package classes;
 
-public class HtmlSelfClosingTag implements ASTNode {
+public class HtmlSelfClosingTag extends ASTNode {
 
     private String tagName;
     private Attribute[] attributes;
@@ -35,3 +35,4 @@ public class HtmlSelfClosingTag implements ASTNode {
         return sb.toString();
     }
 }
+

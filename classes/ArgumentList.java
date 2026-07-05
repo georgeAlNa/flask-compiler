@@ -2,7 +2,7 @@ package classes;
 
 import java.util.Arrays;
 
-public class ArgumentList implements ASTNode {
+public class ArgumentList extends ASTNode {
 
     private Expression[] expressions = new Expression[0];
 
@@ -21,3 +21,4 @@ public class ArgumentList implements ASTNode {
                 "\n}";
     }
 }
+

@@ -1,6 +1,6 @@
 package classes;
 
-public class PropertyDeclaration implements ASTNode {
+public class PropertyDeclaration extends ASTNode {
 
     private String identifier;
     private String value;
@@ -29,3 +29,4 @@ public class PropertyDeclaration implements ASTNode {
                 "\n}";
     }
 }
+

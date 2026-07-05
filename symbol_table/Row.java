@@ -7,6 +7,11 @@ public class Row {
     private int line;
     private int column;
     private Object additionalData;
+    private String scope;
+    private String origin;
+    private String dataType;
+    private boolean usedInTemplate;
+    private boolean passedToTemplate;
 
     public String getType() {
         return type;
@@ -48,6 +53,46 @@ public class Row {
         this.additionalData = additionalData;
     }
 
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    public String getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
+
+    public boolean isUsedInTemplate() {
+        return usedInTemplate;
+    }
+
+    public void setUsedInTemplate(boolean usedInTemplate) {
+        this.usedInTemplate = usedInTemplate;
+    }
+
+    public boolean isPassedToTemplate() {
+        return passedToTemplate;
+    }
+
+    public void setPassedToTemplate(boolean passedToTemplate) {
+        this.passedToTemplate = passedToTemplate;
+    }
+
     @Override
     public String toString() {
         return "\nRow{" +
@@ -55,6 +100,11 @@ public class Row {
                 ", \nvalue='" + value + '\'' +
                 ", \nline=" + line +
                 ", \ncolumn=" + column +
+                ", \nscope='" + scope + '\'' +
+                ", \norigin='" + origin + '\'' +
+                ", \ndataType='" + dataType + '\'' +
+                ", \nusedInTemplate=" + usedInTemplate +
+                ", \npassedToTemplate=" + passedToTemplate +
                 "\n}";
     }
 }

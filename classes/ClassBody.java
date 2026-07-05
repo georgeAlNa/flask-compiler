@@ -1,6 +1,6 @@
 package classes;
 
-public class ClassBody implements ASTNode {
+public class ClassBody extends ASTNode {
 
     private ClassMember[] classMembers;
 
@@ -24,3 +24,4 @@ public class ClassBody implements ASTNode {
         return sb.toString();
     }
 }
+

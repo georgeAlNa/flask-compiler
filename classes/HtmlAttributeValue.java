@@ -1,6 +1,6 @@
 package classes;
 
-public class HtmlAttributeValue implements ASTNode {
+public class HtmlAttributeValue extends ASTNode {
 
     private String value;
 
@@ -20,3 +20,4 @@ public class HtmlAttributeValue implements ASTNode {
         return sb.toString();
     }
 }
+

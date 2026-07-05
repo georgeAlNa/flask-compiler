@@ -9,5 +9,8 @@
         <p class="price">{{ product.price }}</p>
         <p>{{ product.details }}</p>
         <a href="/products">{{ backLabel }}</a>
+        <form method="post" action="/product/delete/{{ product.id }}" class="inline-form">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
     </section>
 {% endblock %}

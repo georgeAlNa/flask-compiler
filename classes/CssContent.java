@@ -3,7 +3,7 @@ package classes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CssContent implements ASTNode {
+public class CssContent extends ASTNode {
 
     private List<CssRule> cssRules = new ArrayList<>();
 
@@ -27,3 +27,4 @@ public class CssContent implements ASTNode {
         return sb.toString();
     }
 }
+

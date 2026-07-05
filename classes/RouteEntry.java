@@ -2,7 +2,7 @@ package classes;
 
 import java.util.List;
 
-public class RouteEntry implements MetadataEntry {
+public class RouteEntry extends MetadataEntry {
 
     private String route;
     private List<String> methods;
@@ -40,3 +40,4 @@ public class RouteEntry implements MetadataEntry {
                 "}";
     }
 }
+

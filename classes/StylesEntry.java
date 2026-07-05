@@ -1,6 +1,6 @@
 package classes;
 
-public class StylesEntry implements MetadataEntry {
+public class StylesEntry extends MetadataEntry {
 
     private StylesContent stylesContent;
 
@@ -23,3 +23,4 @@ public class StylesEntry implements MetadataEntry {
                 "}";
     }
 }
+

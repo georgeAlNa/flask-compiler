@@ -1,6 +1,6 @@
 package classes;
 
-public class FlaskClass implements ASTNode {
+public class FlaskClass extends ASTNode {
 
     private String className;
     private ClassBody classBody;
@@ -29,3 +29,4 @@ public class FlaskClass implements ASTNode {
                 "\n}";
     }
 }
+

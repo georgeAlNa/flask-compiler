@@ -1,9 +1,12 @@
 package classes;
 
-public class InlineTemplate implements ASTNode {
+import jinja_ast.TemplateNode;
+
+public class InlineTemplate extends ASTNode {
 
     private String rawContent;
     private HtmlDocument htmlDocument;
+    private TemplateNode templateNode;
 
     public InlineTemplate() {
     }
@@ -26,12 +29,22 @@ public class InlineTemplate implements ASTNode {
 
     public void setHtmlDocument(HtmlDocument htmlDocument) {
         this.htmlDocument = htmlDocument;
+        addChild(htmlDocument);
+    }
+
+    public TemplateNode getTemplateNode() {
+        return templateNode;
+    }
+
+    public void setTemplateNode(TemplateNode templateNode) {
+        this.templateNode = templateNode;
+        addChild(templateNode);
     }
 
     @Override
     public String toString() {
         return "\nInlineTemplate{" +
-                "\nhtmlDocument=" + htmlDocument +
+                "\ntemplateNode=\n" + (templateNode != null ? templateNode.print() : "null") +
                 "\n}";
     }
 }

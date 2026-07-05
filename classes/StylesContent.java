@@ -3,7 +3,7 @@ package classes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StylesContent implements ASTNode {
+public class StylesContent extends ASTNode {
 
     private String rawCss;
     private List<CssContent> cssContents = new ArrayList<>();
@@ -45,3 +45,4 @@ public class StylesContent implements ASTNode {
         return sb.toString();
     }
 }
+

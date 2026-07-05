@@ -3,7 +3,7 @@ package classes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CssRule implements ASTNode {
+public class CssRule extends ASTNode {
 
     private String selector;
     private List<CssDeclaration> declarations = new ArrayList<>();
@@ -38,3 +38,4 @@ public class CssRule implements ASTNode {
         return sb.toString();
     }
 }
+

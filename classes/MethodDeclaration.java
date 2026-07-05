@@ -1,6 +1,6 @@
 package classes;
 
-public class MethodDeclaration implements ASTNode {
+public class MethodDeclaration extends ASTNode {
 
     private String methodName;
     private ParameterList parameterList;
@@ -39,3 +39,4 @@ public class MethodDeclaration implements ASTNode {
                 "\n}";
     }
 }
+

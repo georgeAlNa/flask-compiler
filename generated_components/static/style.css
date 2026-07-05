@@ -300,6 +300,15 @@ textarea {
     resize: vertical;
 }
 
+.inline-form {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    margin: 12px 0 0;
+    max-width: none;
+    backdrop-filter: none;
+}
+
 /* === Section Styling === */
 section {
     padding: 20px 0;

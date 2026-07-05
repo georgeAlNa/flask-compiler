@@ -1,6 +1,6 @@
 package classes;
 
-public class FunctionCall implements ASTNode {
+public class FunctionCall extends ASTNode {
 
     private String functionName;
     private ArgumentList argumentList;
@@ -29,3 +29,4 @@ public class FunctionCall implements ASTNode {
                 "\n}";
     }
 }
+

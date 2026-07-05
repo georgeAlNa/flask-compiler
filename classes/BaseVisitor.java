@@ -2,11 +2,23 @@ package classes;
 
 import FlaskGen.FlaskParser;
 import FlaskGen.FlaskParserBaseVisitor;
+import jinja_ast.HtmlElementNode;
+import jinja_ast.JinjaExpressionNode;
+import jinja_ast.JinjaForNode;
+import jinja_ast.JinjaIfNode;
+import jinja_ast.JinjaVariableNode;
+import jinja_ast.TemplateNode;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import python_ast.AssignmentNode;
+import python_ast.ListNode;
+import python_ast.PythonProgramNode;
+import python_ast.RenderTemplateNode;
+import python_ast.ReturnNode;
+import python_ast.RouteNode;
 import semantic_check.SemanticAnalyzer;
 import symbol_table.Row;
 import symbol_table.SymbolTable;
@@ -22,6 +34,8 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
 
     private SymbolTable symbolTable = new SymbolTable();
     private SemanticAnalyzer analyzer = new SemanticAnalyzer(symbolTable);
+    private final PythonProgramNode pythonProgramNode = new PythonProgramNode();
+    private String currentScope = "global";
     /**
      * Stores raw Python text of global variable declarations for emission in app.py
      */
@@ -46,7 +60,7 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
         for (FlaskParser.RouteDefinitionContext rd : ctx.routeDefinition()) {
             FlaskComponent component = (FlaskComponent) visit(rd);
             if (component != null) {
-                application.getComponents().add(component);
+                application.addComponent(component);
             }
         }
         if (ctx.mainGuard() != null) {
@@ -58,6 +72,7 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
         this.symbolTable.print();
         // Store captured global declarations in the application
         application.getGlobalDeclarations().addAll(globalDeclarationLines);
+        application.setPythonProgramNode(pythonProgramNode);
         return application;
     }
 
@@ -94,10 +109,12 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
     @Override
     public Object visitGlobalListDef(FlaskParser.GlobalListDefContext ctx) {
         String varName = ctx.IDENTIFIER().getText();
-        addRow("globalVariable", varName, ctx.start);
+        Row row = addRow("globalVariable", varName, ctx.start, "global", "PYTHON", "list", false, false);
         // Capture the raw source text of the entire global declaration for code gen
         String rawDecl = getRawText(ctx);
+        row.setAdditionalData(rawDecl);
         globalDeclarationLines.add(rawDecl);
+        pythonProgramNode.addChild(new ListNode(varName, rawDecl, ctx.start.getLine(), ctx.start.getCharPositionInLine()));
         return null;
     }
 
@@ -137,6 +154,9 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
 
         // Extract function name
         String funcName = ctx.IDENTIFIER().getText();
+        currentScope = funcName;
+        RouteNode routeNode = new RouteNode(routePath, funcName, methods, ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        pythonProgramNode.addRoute(routeNode);
         FlaskClass flaskClass = new FlaskClass();
         flaskClass.setClassName(funcName);
         addRow("routeFunction", funcName, ctx.DEF().getSymbol());
@@ -162,7 +182,11 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
                 if (stmtCtx instanceof FlaskParser.BodyVarAssignmentContext vaCtx) {
                     String varName = vaCtx.IDENTIFIER().getText();
                     String varValue = getRawText(vaCtx.pyExpression());
-                    addRow("classProperty", varName, vaCtx.start);
+                    Row propertyRow = addRow("classProperty", varName, vaCtx.start, currentScope, "PYTHON",
+                            inferDataType(varValue), false, false);
+                    propertyRow.setAdditionalData(varValue);
+                    routeNode.addChild(new AssignmentNode(varName, varValue, vaCtx.start.getLine(),
+                            vaCtx.start.getCharPositionInLine()));
 
                     // Detect complex expressions (function calls, generators, list access, etc.)
                     // Simple values are: string literals, numbers, None/True/False, plain
@@ -185,14 +209,24 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
 
                 } else if (stmtCtx instanceof FlaskParser.BodyTemplateAssignmentContext taCtx) {
                     String templateContent = taCtx.TRIPLE_QUOTE_STRING().getText();
-                    addRow("template", templateContent, taCtx.start);
+                    addRow("template", templateContent, taCtx.start, currentScope, "JINJA", "template", false, false);
 
                     InlineTemplate inlineTemplate = new InlineTemplate(templateContent);
+                    TemplateNode templateNode = buildTemplateAst(templateContent, taCtx.start, currentScope);
+                    inlineTemplate.setTemplateNode(templateNode);
+                    routeNode.addChild(templateNode);
                     metadata.getMetadataEntries().add(new TemplateEntry(inlineTemplate));
 
                 } else if (stmtCtx instanceof FlaskParser.BodyReturnStatementContext rsCtx) {
                     String returnText = getRawText(rsCtx.pyExpression());
-                    addRow("returnStatement", returnText, rsCtx.start);
+                    addRow("returnStatement", returnText, rsCtx.start, currentScope, "PYTHON",
+                            "return", false, false);
+                    ReturnNode returnNode = new ReturnNode(returnText, rsCtx.start.getLine(),
+                            rsCtx.start.getCharPositionInLine());
+                    routeNode.addChild(returnNode);
+                    RenderTemplateNode renderNode = new RenderTemplateNode(extractTemplateName(returnText),
+                            rsCtx.start.getLine(), rsCtx.start.getCharPositionInLine());
+                    returnNode.addChild(renderNode);
 
                     // Parse keyword arguments: e.g. render_template_string(template,
                     // items=products_data, label=label)
@@ -203,6 +237,8 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
                         String kwValue = m.group(2);
                         if (!kwKey.equals("template") && !kwKey.equals("debug")) {
                             returnKwArgs.put(kwKey, kwValue);
+                            renderNode.addContextVariable(kwKey, kwValue);
+                            markPassedToTemplate(kwKey);
                         }
                     }
 
@@ -218,7 +254,10 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
                     // Visit nested statements inside if block for symbol table
                     for (FlaskParser.InnerBodyStatementContext innerStmt : ifDef.innerBodyStatement()) {
                         if (innerStmt instanceof FlaskParser.InnerBodyVarAssignmentContext innerVa) {
-                            addRow("classProperty", innerVa.IDENTIFIER().getText(), innerVa.start);
+                            String varValue = getRawText(innerVa.pyExpression());
+                            Row innerRow = addRow("classProperty", innerVa.IDENTIFIER().getText(), innerVa.start,
+                                    currentScope, "PYTHON", inferDataType(varValue), false, false);
+                            innerRow.setAdditionalData(varValue);
                         }
                     }
                 }
@@ -236,7 +275,9 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
                 String kwKey = entry.getKey();
                 String kwValue = entry.getValue();
                 if (!declaredVars.contains(kwKey)) {
-                    addRow("classProperty", kwKey, bodyCtx.start);
+                    Row kwRow = addRow("classProperty", kwKey, bodyCtx.start, currentScope, "PYTHON",
+                            inferDataType(kwValue), false, true);
+                    kwRow.setAdditionalData(kwValue);
                     PropertyDeclaration prop = new PropertyDeclaration();
                     prop.setIdentifier(kwKey);
                     prop.setValue(kwValue);
@@ -252,6 +293,7 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
 
         component.setComponentMetadata(metadata);
         component.setFlaskClass(flaskClass);
+        currentScope = "global";
         return component;
     }
 
@@ -259,12 +301,23 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
     // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     private void addRow(String type, String value, Token token) {
+        addRow(type, value, token, currentScope, "PYTHON", null, false, false);
+    }
+
+    private Row addRow(String type, String value, Token token, String scope, String origin, String dataType,
+            boolean usedInTemplate, boolean passedToTemplate) {
         Row row = new Row();
         row.setType(type);
         row.setValue(value);
         row.setLine(token.getLine());
         row.setColumn(token.getCharPositionInLine());
+        row.setScope(scope);
+        row.setOrigin(origin);
+        row.setDataType(dataType);
+        row.setUsedInTemplate(usedInTemplate);
+        row.setPassedToTemplate(passedToTemplate);
         symbolTable.getRows().add(row);
+        return row;
     }
 
     /**
@@ -283,6 +336,122 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
         if (cs == null)
             return ctx.getText();
         return cs.getText(new org.antlr.v4.runtime.misc.Interval(start.getStartIndex(), stop.getStopIndex()));
+    }
+
+    private TemplateNode buildTemplateAst(String rawTemplate, Token token, String scope) {
+        String content = stripTripleQuotes(rawTemplate);
+        TemplateNode templateNode = new TemplateNode(content, token.getLine(), token.getCharPositionInLine());
+
+        Pattern tagPattern = Pattern.compile("<\\s*([a-zA-Z][a-zA-Z0-9]*)\\b");
+        Matcher tagMatcher = tagPattern.matcher(content);
+        while (tagMatcher.find()) {
+            templateNode.addChild(new HtmlElementNode(tagMatcher.group(1), token.getLine(), token.getCharPositionInLine()));
+        }
+
+        Pattern forPattern = Pattern.compile("\\{%\\s*for\\s+(\\w+)\\s+in\\s+(\\w+)\\s*%\\}");
+        Matcher forMatcher = forPattern.matcher(content);
+        while (forMatcher.find()) {
+            JinjaForNode forNode = new JinjaForNode(forMatcher.group(1), forMatcher.group(2),
+                    token.getLine(), token.getCharPositionInLine());
+            templateNode.addChild(forNode);
+            Row loopRow = addRow("jinjaFor", forMatcher.group(2), token, scope, "JINJA", "loopSource", true, false);
+            loopRow.setAdditionalData(forMatcher.group(1));
+        }
+
+        Pattern ifPattern = Pattern.compile("\\{%\\s*if\\s+([^%]+?)\\s*%\\}");
+        Matcher ifMatcher = ifPattern.matcher(content);
+        while (ifMatcher.find()) {
+            String condition = ifMatcher.group(1).trim();
+            templateNode.addChild(new JinjaIfNode(condition, token.getLine(), token.getCharPositionInLine()));
+            addRow("jinjaIf", condition, token, scope, "JINJA", "condition", true, false);
+        }
+
+        Pattern variablePattern = Pattern.compile("\\{\\{\\s*([a-zA-Z_][a-zA-Z0-9_]*)(?:\\.([a-zA-Z_][a-zA-Z0-9_]*))?");
+        Matcher variableMatcher = variablePattern.matcher(content);
+        while (variableMatcher.find()) {
+            String variableName = variableMatcher.group(1);
+            String propertyName = variableMatcher.group(2);
+            JinjaVariableNode variableNode = new JinjaVariableNode(variableName, propertyName,
+                    token.getLine(), token.getCharPositionInLine());
+            templateNode.addChild(variableNode);
+            Row variableRow = addRow("jinjaVariable", variableName, token, scope, "JINJA",
+                    propertyName == null ? "variable" : "propertyAccess", true, false);
+            variableRow.setAdditionalData(propertyName);
+            markUsedInTemplate(variableName);
+        }
+
+        Pattern expressionPattern = Pattern.compile("\\{\\{\\s*(.*?)\\s*\\}\\}");
+        Matcher expressionMatcher = expressionPattern.matcher(content);
+        while (expressionMatcher.find()) {
+            templateNode.addChild(new JinjaExpressionNode(expressionMatcher.group(1).trim(),
+                    token.getLine(), token.getCharPositionInLine()));
+        }
+
+        return templateNode;
+    }
+
+    private String stripTripleQuotes(String rawTemplate) {
+        if (rawTemplate == null) {
+            return "";
+        }
+        String content = rawTemplate.trim();
+        if (content.startsWith("\"\"\"")) {
+            content = content.substring(3);
+        }
+        if (content.endsWith("\"\"\"")) {
+            content = content.substring(0, content.length() - 3);
+        }
+        return content;
+    }
+
+    private String inferDataType(String value) {
+        if (value == null) {
+            return "unknown";
+        }
+        String trimmed = value.trim();
+        if (trimmed.startsWith("[") || trimmed.endsWith("_data")) {
+            return "list";
+        }
+        if (trimmed.startsWith("{")) {
+            return "dict";
+        }
+        if (trimmed.startsWith("\"") || trimmed.startsWith("'")) {
+            return "string";
+        }
+        if (trimmed.matches("-?\\d+(\\.\\d+)?")) {
+            return "number";
+        }
+        if (trimmed.equals("True") || trimmed.equals("False") || trimmed.equals("true") || trimmed.equals("false")) {
+            return "boolean";
+        }
+        if (trimmed.startsWith("render_template")) {
+            return "templateRender";
+        }
+        return "expression";
+    }
+
+    private String extractTemplateName(String returnText) {
+        if (returnText == null) {
+            return "";
+        }
+        Matcher matcher = Pattern.compile("render_template(?:_string)?\\(([^,\\)]+)").matcher(returnText);
+        return matcher.find() ? matcher.group(1).trim() : "";
+    }
+
+    private void markUsedInTemplate(String variableName) {
+        for (Row row : symbolTable.getRows()) {
+            if (variableName.equals(row.getValue())) {
+                row.setUsedInTemplate(true);
+            }
+        }
+    }
+
+    private void markPassedToTemplate(String variableName) {
+        for (Row row : symbolTable.getRows()) {
+            if (variableName.equals(row.getValue())) {
+                row.setPassedToTemplate(true);
+            }
+        }
     }
 
     private String stripQuotes(String s) {

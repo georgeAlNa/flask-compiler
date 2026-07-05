@@ -1,6 +1,6 @@
 package classes;
 
-public class CssDeclaration implements ASTNode {
+public class CssDeclaration extends ASTNode {
 
     private String property;
     private String value;
@@ -29,3 +29,4 @@ public class CssDeclaration implements ASTNode {
                 "\n}";
     }
 }
+

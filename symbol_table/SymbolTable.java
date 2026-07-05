@@ -17,7 +17,8 @@ public class SymbolTable {
 
     public void print() {
         System.out.println("\n════════════════════ Symbol Table ════════════════════");
-        System.out.printf("%-20s %-30s %-12s%n", "Type", "Value", "Location");
+        System.out.printf("%-18s %-24s %-10s %-10s %-12s %-7s %-7s %-10s%n",
+                "Type", "Value", "Origin", "DataType", "Scope", "Used", "Passed", "Location");
         System.out.println("───────────────────────────────────────────────────────────");
 
         for (Row row : rows) {
@@ -26,9 +27,14 @@ public class SymbolTable {
                 String value    = formatValue(row);
                 String location = row.getLine() + ":" + row.getColumn();
 
-                System.out.printf("%-20s %-30s %-12s%n",
+                System.out.printf("%-18s %-24s %-10s %-10s %-12s %-7s %-7s %-10s%n",
                         type,
-                        value.length() > 30 ? value.substring(0, 27) + "..." : value,
+                        value.length() > 24 ? value.substring(0, 21) + "..." : value,
+                        safe(row.getOrigin()),
+                        safe(row.getDataType()),
+                        safe(row.getScope()),
+                        row.isUsedInTemplate(),
+                        row.isPassedToTemplate(),
                         location);
 
                 if ("template".equals(type) && row.getValue() != null) {
@@ -37,6 +43,10 @@ public class SymbolTable {
             }
         }
         System.out.println("═══════════════════════════════════════════════════════════");
+    }
+
+    private String safe(String value) {
+        return value == null ? "-" : value;
     }
 
     private String formatValue(Row row) {

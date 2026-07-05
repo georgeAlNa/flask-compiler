@@ -2,7 +2,7 @@ package classes;
 
 import java.util.Arrays;
 
-public class ParameterList implements ASTNode {
+public class ParameterList extends ASTNode {
 
     private String[] parameters = new String[0];
 
@@ -26,3 +26,4 @@ public class ParameterList implements ASTNode {
         return sb.toString();
     }
 }
+

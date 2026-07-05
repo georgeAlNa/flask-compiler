@@ -1,6 +1,6 @@
 package classes;
 
-public class Expression implements ASTNode {
+public class Expression extends ASTNode {
 
     private String identifier;
     private String value;
@@ -37,3 +37,4 @@ public class Expression implements ASTNode {
                 "\n}";
     }
 }
+

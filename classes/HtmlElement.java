@@ -1,6 +1,6 @@
 package classes;
 
-public class HtmlElement implements ASTNode {
+public class HtmlElement extends ASTNode {
 
     private String tagName;
     private HtmlContent[] htmlContents;
@@ -44,3 +44,4 @@ public class HtmlElement implements ASTNode {
         return sb.toString();
     }
 }
+

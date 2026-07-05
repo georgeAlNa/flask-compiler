@@ -55,6 +55,12 @@ def product_detail(id):
     backLabel = "Back to Products"
     return render_template('ProductDetail.html', backLabel=backLabel, product=product)
 
+@app.route('/product/delete/<int:id>', methods=['POST'])
+def delete_product(id):
+    global products_data
+    products_data = [p for p in products_data if p["id"] != id]
+    return redirect("/products")
+
 
 if __name__ == '__main__':
     app.run(debug=True)

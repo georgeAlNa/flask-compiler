@@ -2,7 +2,7 @@ package classes;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-public class ClassMember implements ASTNode {
+public class ClassMember extends ASTNode {
 
     private PropertyDeclaration propertyDeclaration;
     private MethodDeclaration methodDeclaration;
@@ -36,3 +36,4 @@ public class ClassMember implements ASTNode {
                 "\n}";
     }
 }
+

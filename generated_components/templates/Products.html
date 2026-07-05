@@ -11,6 +11,9 @@
             <p class="price">{{ p.price }}</p>
             <div>
                 <a href="/product/{{ p.id }}">{{ detailsLabel }}</a>
+                <form method="post" action="/product/delete/{{ p.id }}" class="inline-form">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
             </div>
         </div>
         {% endfor %}

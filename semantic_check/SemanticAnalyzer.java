@@ -19,10 +19,13 @@ public class SemanticAnalyzer {
     }
 
     public void registerChecks() {
-        checks.add(new ComponentRequirementsCheck());
-        checks.add(new Jinja2VariablesCheck());
+        checks.add(new UndefinedJinjaVariableCheck());
         checks.add(new ForLoopSourceCheck());
         checks.add(new RouteUniquenessCheck());
+        checks.add(new ProductRequiredFieldsCheck());
+        checks.add(new InvalidPropertyAccessCheck());
+        checks.add(new EmptyDataListCheck());
+        checks.add(new ComponentRequirementsCheck());
     }
 
     public void analyze() {

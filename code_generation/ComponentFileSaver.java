@@ -54,10 +54,14 @@ public class ComponentFileSaver {
             saveToFile(outputDir + "/templates/base.html", generateBaseTemplate());
 
             // 3) Save HTML templates into templates/ folder
+            int savedTemplateCount = 0;
             for (GeneratedComponent component : components) {
                 String name = component.getComponentName();
                 if (component.getHtml() != null && !component.getHtml().trim().isEmpty()) {
-                    saveToFile(outputDir + "/templates/" + name + ".html", component.getHtml());
+                    String html = "Products".equals(name) ? addDeleteButtonToProductsTemplate(component.getHtml())
+                            : component.getHtml();
+                    saveToFile(outputDir + "/templates/" + name + ".html", html);
+                    savedTemplateCount++;
                 }
             }
 
@@ -75,7 +79,7 @@ public class ComponentFileSaver {
             System.out.println("\nSaved " + components.size() + " component(s) to: " + outputDir);
             System.out.println("  - " + outputDir + "/app.py");
             System.out.println("  - " + outputDir + "/templates/base.html");
-            System.out.println("  - " + outputDir + "/templates/ (" + components.size() + " pages)");
+            System.out.println("  - " + outputDir + "/templates/ (" + savedTemplateCount + " pages)");
             System.out.println("  - " + outputDir + "/static/style.css");
 
         } catch (IOException e) {
@@ -428,6 +432,15 @@ public class ComponentFileSaver {
                     resize: vertical;
                 }
 
+                .inline-form {
+                    background: transparent;
+                    box-shadow: none;
+                    padding: 0;
+                    margin: 12px 0 0;
+                    max-width: none;
+                    backdrop-filter: none;
+                }
+
                 /* === Section Styling === */
                 section {
                     padding: 20px 0;
@@ -479,6 +492,18 @@ public class ComponentFileSaver {
                 }
 
                 """;
+    }
+
+    private static String addDeleteButtonToProductsTemplate(String html) {
+        if (html.contains("/product/delete/")) {
+            return html;
+        }
+        String marker = "<a href=\"/product/{{ p.id }}\">{{ detailsLabel }}</a>";
+        String replacement = marker + "\n" +
+                "                <form method=\"post\" action=\"/product/delete/{{ p.id }}\" class=\"inline-form\">\n" +
+                "                    <button type=\"submit\" class=\"btn btn-danger\">Delete</button>\n" +
+                "                </form>";
+        return html.replace(marker, replacement);
     }
 
     private static void saveToFile(String filePath, String content) {

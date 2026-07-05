@@ -1,6 +1,6 @@
 package classes;
 
-public class HtmlStartTag implements ASTNode {
+public class HtmlStartTag extends ASTNode {
 
     private String tagName;
     private Attribute[] attributes;
@@ -35,3 +35,4 @@ public class HtmlStartTag implements ASTNode {
         return sb.toString();
     }
 }
+

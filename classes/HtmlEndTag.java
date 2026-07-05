@@ -1,6 +1,6 @@
 package classes;
 
-public class HtmlEndTag implements ASTNode {
+public class HtmlEndTag extends ASTNode {
 
     private String tagName;
 
@@ -20,3 +20,4 @@ public class HtmlEndTag implements ASTNode {
         return sb.toString();
     }
 }
+
