@@ -30,4 +30,13 @@ public class RouteNode extends ASTNode {
     public List<String> getMethods() {
         return methods;
     }
+
+    @Override
+    protected String getPrintLabel() {
+        String label = "RouteNode(route=" + quote(routePath) + ", function=" + quote(functionName);
+        if (!methods.isEmpty()) {
+            label += ", methods=" + quote(String.join(",", methods));
+        }
+        return label + ")";
+    }
 }

@@ -9,6 +9,8 @@ rem set SAMPLE=samples\sample_if_else.txt
 rem set SAMPLE=samples\sample_methods_post.txt
 rem set SAMPLE=samples\sample_extends_include_set.txt
 rem set SAMPLE=samples\sample_errors.txt
+rem set SAMPLE=samples\sample_semantic_full.txt
+rem set SAMPLE=samples\sample_syntax_error.txt
 
 echo ========================================
 echo  Flask Compiler - Build Script (Windows)
@@ -27,13 +29,16 @@ echo.
 echo [2/3] Compiling Java sources...
 if not exist out mkdir out
 dir /s /b *.java | findstr /v "\\out\\" | findstr /v "\\.idea\\" > sources.txt
-javac -cp ".;%ANTLR_JAR%" -d out @sources.txt
+javac -J-Dsun.zip.disableMemoryMapping=true -cp ".;%ANTLR_JAR%" -d out @sources.txt 2> javac_errors.tmp
 if %errorlevel% neq 0 (
     echo [ERROR] Compilation failed.
+    if exist javac_errors.tmp type javac_errors.tmp
+    if exist javac_errors.tmp del javac_errors.tmp
     if exist sources.txt del sources.txt
     exit /b %errorlevel%
 )
 echo [OK] Compilation successful.
+if exist javac_errors.tmp del javac_errors.tmp
 if exist sources.txt del sources.txt
 
 echo.
@@ -41,6 +46,10 @@ echo [3/3] Running Flask Compiler...
 echo ========================================
 
 java -cp "out;%ANTLR_JAR%" Main "%SAMPLE%"
+if %errorlevel% neq 0 (
+    echo [ERROR] Compiler run failed.
+    exit /b %errorlevel%
+)
 
 echo.
 echo ========================================

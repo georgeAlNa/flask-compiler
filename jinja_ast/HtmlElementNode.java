@@ -15,4 +15,9 @@ public class HtmlElementNode extends ASTNode {
     public String getTagName() {
         return tagName;
     }
+
+    @Override
+    protected String getPrintLabel() {
+        return "HtmlElementNode(tag=" + quote(tagName) + ")";
+    }
 }

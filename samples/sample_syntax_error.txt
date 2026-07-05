@@ -1,0 +1,14 @@
+from flask import Flask, render_template_string
+
+app = Flask(__name__)
+
+@app.route('/broken-syntax')
+def broken_syntax(
+    title = "Missing closing parenthesis and colon"
+
+    template = """
+    <h1>{{ title }}</h1>
+    """
+
+    return render_template_string(template,
+                                  title=title)

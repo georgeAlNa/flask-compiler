@@ -21,6 +21,9 @@ public class UndefinedJinjaVariableCheck implements SemanticCheck {
                     || "parameter".equals(row.getType()))) {
                 defined.add(row.getValue());
             }
+            if ("templateBinding".equals(row.getType())) {
+                defined.add(row.getValue());
+            }
             if ("jinjaFor".equals(row.getType()) && row.getAdditionalData() instanceof String loopVar) {
                 loopVariables.add(loopVar);
             }

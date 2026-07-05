@@ -15,4 +15,9 @@ public class JinjaIfNode extends ASTNode {
     public String getCondition() {
         return condition;
     }
+
+    @Override
+    protected String getPrintLabel() {
+        return "JinjaIfNode(condition=" + quote(condition) + ")";
+    }
 }

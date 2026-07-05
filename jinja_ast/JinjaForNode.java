@@ -21,4 +21,9 @@ public class JinjaForNode extends ASTNode {
     public String getSourceName() {
         return sourceName;
     }
+
+    @Override
+    protected String getPrintLabel() {
+        return "JinjaForNode(variable=" + quote(itemName) + ", source=" + quote(sourceName) + ")";
+    }
 }

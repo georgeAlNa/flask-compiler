@@ -15,4 +15,9 @@ public class DictNode extends ASTNode {
     public String getRawValue() {
         return rawValue;
     }
+
+    @Override
+    protected String getPrintLabel() {
+        return "DictNode(value=" + quote(rawValue) + ")";
+    }
 }

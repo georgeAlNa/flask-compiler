@@ -15,7 +15,6 @@ public class ForLoopSourceCheck implements SemanticCheck {
     public void check(SymbolTable symbolTable, List<SemanticError> errors) {
         List<Row> rows = symbolTable.getRows();
 
-        Pattern forPattern = Pattern.compile("\\{%\\s*for\\s+\\w+\\s+in\\s+(\\w+)\\s*%\\}");
         // Pattern to extract keyword argument keys from return statements (e.g.
         // items=products_data)
         Pattern kwArgPattern = Pattern.compile("(\\w+)=\\w+");
@@ -33,41 +32,81 @@ public class ForLoopSourceCheck implements SemanticCheck {
         }
 
         for (Row row : rows) {
-            if ("template".equals(row.getType()) && row.getValue() != null) {
-                Matcher matcher = forPattern.matcher(row.getValue());
-                while (matcher.find()) {
-                    String sourceVar = matcher.group(1);
-                    boolean found = false;
+            if (!"jinjaFor".equals(row.getType())) {
+                continue;
+            }
 
-                    // Check declared local properties, imported vars, global vars,
-                    // and keyword args passed in render_template_string calls
-                    for (Row r : rows) {
-                        if ("classProperty".equals(r.getType()) && sourceVar.equals(r.getValue())) {
-                            found = true;
-                            break;
-                        }
-                        if ("importedVar".equals(r.getType()) && sourceVar.equals(r.getValue())) {
-                            found = true;
-                            break;
-                        }
-                        if ("globalVariable".equals(r.getType()) && sourceVar.equals(r.getValue())) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    // Also valid if it appears as a keyword arg key in a return statement
-                    if (!found && returnKwArgKeys.contains(sourceVar)) {
-                        found = true;
-                    }
+            String sourceVar = row.getValue();
+            Row sourceRow = null;
 
-                    if (!found) {
-                        errors.add(new SemanticError(
-                                "{% for %} iterates over undefined source: '" + sourceVar + "'",
-                                "Variable '" + sourceVar + "' used in for loop is not defined in component",
-                                row.getLine(), row.getColumn(), ErrorType.REFERENCE));
-                    }
+            // Check declared local properties, imported vars, global vars,
+            // and keyword args passed in render_template_string calls.
+            for (Row r : rows) {
+                if ("classProperty".equals(r.getType())
+                        && sourceVar.equals(r.getValue())
+                        && sameScope(row, r)) {
+                    sourceRow = r;
+                    break;
+                }
+                if ("importedVar".equals(r.getType()) && sourceVar.equals(r.getValue())) {
+                    sourceRow = r;
+                    break;
+                }
+                if ("globalVariable".equals(r.getType()) && sourceVar.equals(r.getValue())) {
+                    sourceRow = r;
+                    break;
+                }
+                if ("templateBinding".equals(r.getType())
+                        && sourceVar.equals(r.getValue())
+                        && sameScope(row, r)) {
+                    sourceRow = resolveBindingTarget(rows, r);
+                    break;
                 }
             }
+
+            // Also valid if it appears as a keyword arg key in a return statement.
+            if (sourceRow == null && returnKwArgKeys.contains(sourceVar)) {
+                sourceRow = new Row();
+                sourceRow.setValue(sourceVar);
+                sourceRow.setDataType("unknown");
+            }
+
+            if (sourceRow == null) {
+                errors.add(new SemanticError(
+                        "{% for %} iterates over undefined source: '" + sourceVar + "'",
+                        "Variable '" + sourceVar + "' used in for loop is not defined in component",
+                        row.getLine(), row.getColumn(), ErrorType.REFERENCE));
+            } else if (sourceRow.getDataType() != null
+                    && !"list".equals(sourceRow.getDataType())
+                    && !"unknown".equals(sourceRow.getDataType())) {
+                errors.add(new SemanticError(
+                        "{% for %} iterates over non-list source: '" + sourceVar + "'",
+                        "Variable '" + sourceVar + "' has type '" + sourceRow.getDataType()
+                                + "' but a Jinja2 for loop requires a list-like value",
+                        row.getLine(), row.getColumn(), ErrorType.TYPE));
+            }
         }
+    }
+
+    private Row resolveBindingTarget(List<Row> rows, Row bindingRow) {
+        if (!(bindingRow.getAdditionalData() instanceof String targetName)) {
+            return bindingRow;
+        }
+        for (Row row : rows) {
+            if (targetName.equals(row.getValue())
+                    && ("globalVariable".equals(row.getType())
+                    || "classProperty".equals(row.getType())
+                    || "parameter".equals(row.getType()))) {
+                return row;
+            }
+        }
+        return bindingRow;
+    }
+
+    private boolean sameScope(Row left, Row right) {
+        if (left.getScope() == null || right.getScope() == null) {
+            return false;
+        }
+        return left.getScope().equals(right.getScope());
     }
 }

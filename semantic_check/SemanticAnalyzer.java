@@ -20,8 +20,11 @@ public class SemanticAnalyzer {
 
     public void registerChecks() {
         checks.add(new UndefinedJinjaVariableCheck());
+        checks.add(new UndefinedPythonVariableCheck());
         checks.add(new ForLoopSourceCheck());
         checks.add(new RouteUniquenessCheck());
+        checks.add(new RouteFunctionUniquenessCheck());
+        checks.add(new JinjaIfConditionCheck());
         checks.add(new ProductRequiredFieldsCheck());
         checks.add(new InvalidPropertyAccessCheck());
         checks.add(new EmptyDataListCheck());
@@ -52,14 +55,14 @@ public class SemanticAnalyzer {
             for (int i = 0; i < errors.size(); i++) {
                 SemanticError error = errors.get(i);
                 System.out.println("\nError #" + (i + 1) + ":");
-                System.out.println("├─ Type:     " + error.getType());
-                System.out.println("├─ Message:  " + error.getMessage());
-                System.out.println("├─ Details:  " + error.getTitle());
-                System.out.println("├─ Location: Line " + error.getLine() + ", Column " + error.getColumn());
-                System.out.println("└─" + "─".repeat(50));
+                System.out.println("| Type:     " + error.getType());
+                System.out.println("| Message:  " + error.getMessage());
+                System.out.println("| Details:  " + error.getTitle());
+                System.out.println("| Location: Line " + error.getLine() + ", Column " + error.getColumn());
+                System.out.println("+--------------------------------------------------");
             }
         } else {
-            System.out.println("\n✓ No semantic errors found.");
+            System.out.println("\n[OK] No semantic errors found.");
         }
     }
 }

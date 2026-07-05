@@ -9,12 +9,20 @@ products_data = [
 @app.route('/broken')
 def broken():
     title = "Broken"
+    nonList = "not a list"
+    brokenValue = missingPythonSource
 
     template = """
     <h1>{{ title }}</h1>
     <p>{{ missingVar }}</p>
+    {% if missingFlag %}
+    <p>Hidden</p>
+    {% endif %}
     {% for p in items %}
     <span>{{ p.unknownField }}</span>
+    {% endfor %}
+    {% for letter in nonList %}
+    <span>{{ letter }}</span>
     {% endfor %}
     {% for row in unknownList %}
     <span>{{ row }}</span>
@@ -23,11 +31,23 @@ def broken():
 
     return render_template_string(template,
                                   items=products_data,
+                                  nonList=nonList,
                                   title=title)
 
 @app.route('/broken')
 def broken_duplicate():
     label = "Duplicate"
+
+    template = """
+    <p>{{ label }}</p>
+    """
+
+    return render_template_string(template,
+                                  label=label)
+
+@app.route('/other')
+def broken():
+    label = "Duplicate Function"
 
     template = """
     <p>{{ label }}</p>

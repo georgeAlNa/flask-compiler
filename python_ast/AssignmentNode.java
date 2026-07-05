@@ -21,4 +21,9 @@ public class AssignmentNode extends ASTNode {
     public String getValue() {
         return value;
     }
+
+    @Override
+    protected String getPrintLabel() {
+        return "AssignmentNode(name=" + quote(variableName) + ", value=" + quote(value) + ")";
+    }
 }

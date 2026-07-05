@@ -1,8 +1,10 @@
 GitHub Repository:
-TODO: add repository URL
+<add final GitHub repository URL before submission>
 
 Group Members:
-TODO: add member names
+1. <add first member name>
+2. <add second member name>
+3. <add third member name>
 
 Project:
 Flask Compiler - Python/Flask/Jinja2/HTML/CSS compiler project

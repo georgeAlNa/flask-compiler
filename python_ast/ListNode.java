@@ -21,4 +21,9 @@ public class ListNode extends ASTNode {
     public String getRawValue() {
         return rawValue;
     }
+
+    @Override
+    protected String getPrintLabel() {
+        return "ListNode(name=" + quote(name) + ", value=" + quote(rawValue) + ")";
+    }
 }

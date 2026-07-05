@@ -60,7 +60,7 @@ public abstract class ASTNode {
     }
 
     protected void print(StringBuilder builder, String indent) {
-        builder.append(indent).append(nodeType);
+        builder.append(indent).append(getPrintLabel());
         if (line >= 0) {
             builder.append(" @ ").append(line).append(":").append(column);
         }
@@ -68,5 +68,23 @@ public abstract class ASTNode {
         for (ASTNode child : children) {
             child.print(builder, indent + "  ");
         }
+    }
+
+    protected String getPrintLabel() {
+        return nodeType;
+    }
+
+    protected String quote(String value) {
+        if (value == null) {
+            return "\"\"";
+        }
+        return "\"" + shorten(value.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n"), 80) + "\"";
+    }
+
+    protected String shorten(String value, int maxLength) {
+        if (value == null || value.length() <= maxLength) {
+            return value;
+        }
+        return value.substring(0, Math.max(0, maxLength - 3)) + "...";
     }
 }

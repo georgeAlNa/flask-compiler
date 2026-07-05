@@ -61,11 +61,11 @@ public class ComponentRequirementsCheck implements SemanticCheck {
     private void appendErrorToFile(SemanticError error) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(OUTPUT_FILE, true))) {
             writer.write("Error:\n");
-            writer.write("├─ Type: " + error.getType() + "\n");
-            writer.write("├─ Message: " + error.getMessage() + "\n");
-            writer.write("├─ Details: " + error.getTitle() + "\n");
-            writer.write("├─ Location: Line " + error.getLine() + ", Column " + error.getColumn() + "\n");
-            writer.write("└─" + "-".repeat(50) + "\n\n");
+            writer.write("| Type: " + error.getType() + "\n");
+            writer.write("| Message: " + error.getMessage() + "\n");
+            writer.write("| Details: " + error.getTitle() + "\n");
+            writer.write("| Location: Line " + error.getLine() + ", Column " + error.getColumn() + "\n");
+            writer.write("+--------------------------------------------------\n\n");
         } catch (IOException e) {
             System.err.println("Failed to write error to file: " + e.getMessage());
         }

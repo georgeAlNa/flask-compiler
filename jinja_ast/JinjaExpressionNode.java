@@ -15,4 +15,9 @@ public class JinjaExpressionNode extends ASTNode {
     public String getExpression() {
         return expression;
     }
+
+    @Override
+    protected String getPrintLabel() {
+        return "JinjaExpressionNode(expression=" + quote(expression) + ")";
+    }
 }

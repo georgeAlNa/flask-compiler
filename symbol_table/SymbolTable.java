@@ -16,10 +16,10 @@ public class SymbolTable {
     }
 
     public void print() {
-        System.out.println("\n════════════════════ Symbol Table ════════════════════");
+        System.out.println("\n==================== Symbol Table ====================");
         System.out.printf("%-18s %-24s %-10s %-10s %-12s %-7s %-7s %-10s%n",
                 "Type", "Value", "Origin", "DataType", "Scope", "Used", "Passed", "Location");
-        System.out.println("───────────────────────────────────────────────────────────");
+        System.out.println("-----------------------------------------------------------");
 
         for (Row row : rows) {
             if (row != null) {
@@ -42,7 +42,8 @@ public class SymbolTable {
                 }
             }
         }
-        System.out.println("═══════════════════════════════════════════════════════════");
+        printTemplateBindings();
+        System.out.println("===========================================================");
     }
 
     private String safe(String value) {
@@ -58,11 +59,27 @@ public class SymbolTable {
 
     private void printTemplateContent(String template) {
         System.out.println("\nTemplate Content:");
-        System.out.println("┌──────────────────────────────────────────────────────");
+        System.out.println("+------------------------------------------------------");
         String[] lines = template.split("\n");
         for (String line : lines) {
-            System.out.println("│ " + line);
+            System.out.println("| " + line);
         }
-        System.out.println("└──────────────────────────────────────────────────────");
+        System.out.println("+------------------------------------------------------");
+    }
+
+    private void printTemplateBindings() {
+        boolean headerPrinted = false;
+        for (Row row : rows) {
+            if (!"templateBinding".equals(row.getType())) {
+                continue;
+            }
+            if (!headerPrinted) {
+                System.out.println("\nPython -> Jinja Bindings:");
+                headerPrinted = true;
+            }
+            System.out.println("  " + row.getScope() + ": " + row.getValue()
+                    + " -> " + row.getAdditionalData()
+                    + " @ " + row.getLine() + ":" + row.getColumn());
+        }
     }
 }

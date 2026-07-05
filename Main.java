@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import syntax_check.SyntaxErrorListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,12 +25,30 @@ public class Main {
 
         CharStream charStream = CharStreams.fromFileName(source);
         FlaskLexer lexer = new FlaskLexer(charStream);
+        SyntaxErrorListener syntaxErrorListener = new SyntaxErrorListener();
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(syntaxErrorListener);
+
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         FlaskParser parser = new FlaskParser(tokens);
+        parser.removeErrorListeners();
+        parser.addErrorListener(syntaxErrorListener);
 
         ParseTree ast = parser.application();
+        if (syntaxErrorListener.hasErrors()) {
+            syntaxErrorListener.printErrors();
+            System.out.println("\nCode generation skipped because syntax errors were found.");
+            return;
+        }
+
         BaseVisitor visitor = new BaseVisitor();
         Application program = (Application) visitor.visit(ast);
+
+        if (visitor.hasSemanticErrors()) {
+            System.out.println("\nCode generation skipped because semantic errors were found.");
+            printAst(program);
+            return;
+        }
 
         List<FlaskComponent> components = program.getComponents();
         List<GeneratedComponent> generatedList = new ArrayList<>();
@@ -63,6 +82,12 @@ public class Main {
 
         ComponentFileSaver.saveComponents(generatedList, OUTPUT_DIR, program.getGlobalDeclarations());
 
+        printAst(program);
+
+        System.out.println(program);
+    }
+
+    private static void printAst(Application program) {
         System.out.println("\n=== Python AST ===");
         System.out.println(program.printPythonAst());
 
@@ -71,8 +96,6 @@ public class Main {
 
         System.out.println("\n=== Full AST ===");
         System.out.println(program.printFullAst());
-
-        System.out.println(program);
     }
 
     private static boolean hasProductsData(List<String> globalDeclarations) {

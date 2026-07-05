@@ -10,6 +10,8 @@ SAMPLE="samples/sample.txt"
 # SAMPLE="samples/sample_methods_post.txt"
 # SAMPLE="samples/sample_extends_include_set.txt"
 # SAMPLE="samples/sample_errors.txt"
+# SAMPLE="samples/sample_semantic_full.txt"
+# SAMPLE="samples/sample_syntax_error.txt"
 
 echo "========================================"
 echo " Flask Compiler - Build Script"

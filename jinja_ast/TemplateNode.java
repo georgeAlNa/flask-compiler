@@ -15,4 +15,9 @@ public class TemplateNode extends ASTNode {
     public String getRawContent() {
         return rawContent;
     }
+
+    @Override
+    protected String getPrintLabel() {
+        return "TemplateNode(content=" + quote(rawContent) + ")";
+    }
 }

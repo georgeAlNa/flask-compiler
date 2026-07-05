@@ -20,6 +20,7 @@ import python_ast.RenderTemplateNode;
 import python_ast.ReturnNode;
 import python_ast.RouteNode;
 import semantic_check.SemanticAnalyzer;
+import semantic_check.SemanticError;
 import symbol_table.Row;
 import symbol_table.SymbolTable;
 
@@ -40,6 +41,18 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
      * Stores raw Python text of global variable declarations for emission in app.py
      */
     private final List<String> globalDeclarationLines = new ArrayList<>();
+
+    public boolean hasSemanticErrors() {
+        return !analyzer.getErrors().isEmpty();
+    }
+
+    public List<SemanticError> getSemanticErrors() {
+        return analyzer.getErrors();
+    }
+
+    public SymbolTable getSymbolTable() {
+        return symbolTable;
+    }
 
     // â”€â”€â”€ Application Root
     // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -238,7 +251,11 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
                         if (!kwKey.equals("template") && !kwKey.equals("debug")) {
                             returnKwArgs.put(kwKey, kwValue);
                             renderNode.addContextVariable(kwKey, kwValue);
+                            Row bindingRow = addRow("templateBinding", kwKey, rsCtx.start, currentScope,
+                                    "PYTHON->JINJA", "binding", true, true);
+                            bindingRow.setAdditionalData(kwValue);
                             markPassedToTemplate(kwKey);
+                            markPassedToTemplate(kwValue);
                         }
                     }
 
@@ -345,37 +362,47 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
         Pattern tagPattern = Pattern.compile("<\\s*([a-zA-Z][a-zA-Z0-9]*)\\b");
         Matcher tagMatcher = tagPattern.matcher(content);
         while (tagMatcher.find()) {
-            templateNode.addChild(new HtmlElementNode(tagMatcher.group(1), token.getLine(), token.getCharPositionInLine()));
+            SourcePosition position = templatePosition(content, tagMatcher.start(), token);
+            templateNode.addChild(new HtmlElementNode(tagMatcher.group(1), position.line, position.column));
         }
 
         Pattern forPattern = Pattern.compile("\\{%\\s*for\\s+(\\w+)\\s+in\\s+(\\w+)\\s*%\\}");
         Matcher forMatcher = forPattern.matcher(content);
         while (forMatcher.find()) {
+            SourcePosition position = templatePosition(content, forMatcher.start(), token);
             JinjaForNode forNode = new JinjaForNode(forMatcher.group(1), forMatcher.group(2),
-                    token.getLine(), token.getCharPositionInLine());
+                    position.line, position.column);
             templateNode.addChild(forNode);
             Row loopRow = addRow("jinjaFor", forMatcher.group(2), token, scope, "JINJA", "loopSource", true, false);
+            loopRow.setLine(position.line);
+            loopRow.setColumn(position.column);
             loopRow.setAdditionalData(forMatcher.group(1));
         }
 
         Pattern ifPattern = Pattern.compile("\\{%\\s*if\\s+([^%]+?)\\s*%\\}");
         Matcher ifMatcher = ifPattern.matcher(content);
         while (ifMatcher.find()) {
+            SourcePosition position = templatePosition(content, ifMatcher.start(), token);
             String condition = ifMatcher.group(1).trim();
-            templateNode.addChild(new JinjaIfNode(condition, token.getLine(), token.getCharPositionInLine()));
-            addRow("jinjaIf", condition, token, scope, "JINJA", "condition", true, false);
+            templateNode.addChild(new JinjaIfNode(condition, position.line, position.column));
+            Row ifRow = addRow("jinjaIf", condition, token, scope, "JINJA", "condition", true, false);
+            ifRow.setLine(position.line);
+            ifRow.setColumn(position.column);
         }
 
         Pattern variablePattern = Pattern.compile("\\{\\{\\s*([a-zA-Z_][a-zA-Z0-9_]*)(?:\\.([a-zA-Z_][a-zA-Z0-9_]*))?");
         Matcher variableMatcher = variablePattern.matcher(content);
         while (variableMatcher.find()) {
+            SourcePosition position = templatePosition(content, variableMatcher.start(), token);
             String variableName = variableMatcher.group(1);
             String propertyName = variableMatcher.group(2);
             JinjaVariableNode variableNode = new JinjaVariableNode(variableName, propertyName,
-                    token.getLine(), token.getCharPositionInLine());
+                    position.line, position.column);
             templateNode.addChild(variableNode);
             Row variableRow = addRow("jinjaVariable", variableName, token, scope, "JINJA",
                     propertyName == null ? "variable" : "propertyAccess", true, false);
+            variableRow.setLine(position.line);
+            variableRow.setColumn(position.column);
             variableRow.setAdditionalData(propertyName);
             markUsedInTemplate(variableName);
         }
@@ -383,11 +410,43 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
         Pattern expressionPattern = Pattern.compile("\\{\\{\\s*(.*?)\\s*\\}\\}");
         Matcher expressionMatcher = expressionPattern.matcher(content);
         while (expressionMatcher.find()) {
+            SourcePosition position = templatePosition(content, expressionMatcher.start(), token);
             templateNode.addChild(new JinjaExpressionNode(expressionMatcher.group(1).trim(),
-                    token.getLine(), token.getCharPositionInLine()));
+                    position.line, position.column));
         }
 
         return templateNode;
+    }
+
+    private SourcePosition templatePosition(String content, int offset, Token token) {
+        int line = token.getLine();
+        int column = token.getCharPositionInLine();
+        int lastLineStart = 0;
+
+        for (int i = 0; i < offset && i < content.length(); i++) {
+            if (content.charAt(i) == '\n') {
+                line++;
+                lastLineStart = i + 1;
+                column = 0;
+            }
+        }
+
+        if (lastLineStart == 0) {
+            column += offset;
+        } else {
+            column = offset - lastLineStart;
+        }
+        return new SourcePosition(line, column);
+    }
+
+    private static class SourcePosition {
+        private final int line;
+        private final int column;
+
+        private SourcePosition(int line, int column) {
+            this.line = line;
+            this.column = column;
+        }
     }
 
     private String stripTripleQuotes(String rawTemplate) {

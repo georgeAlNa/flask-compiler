@@ -21,4 +21,10 @@ public class JinjaVariableNode extends ASTNode {
     public String getPropertyName() {
         return propertyName;
     }
+
+    @Override
+    protected String getPrintLabel() {
+        String expression = propertyName == null ? variableName : variableName + "." + propertyName;
+        return "JinjaVariableNode(expression=" + quote(expression) + ")";
+    }
 }
