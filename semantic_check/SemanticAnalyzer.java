@@ -28,7 +28,7 @@ public class SemanticAnalyzer {
         checks.add(new ProductRequiredFieldsCheck());
         checks.add(new InvalidPropertyAccessCheck());
         checks.add(new EmptyDataListCheck());
-        checks.add(new ComponentRequirementsCheck());
+        checks.add(new RouteTemplateRequirementsCheck());
     }
 
     public void analyze() {

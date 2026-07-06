@@ -3,9 +3,9 @@ package classes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FlaskComponent extends ComponentNode {
+public class FlaskRouteView extends CompilerAstNode {
 
-    private ComponentMetadata componentMetadata;
+    private RouteViewMetadata routeViewMetadata;
     private FlaskClass flaskClass;
 
     /**
@@ -20,12 +20,12 @@ public class FlaskComponent extends ComponentNode {
      */
     private final List<String> preReturnRawLines = new ArrayList<>();
 
-    public ComponentMetadata getComponentMetadata() {
-        return componentMetadata;
+    public RouteViewMetadata getRouteViewMetadata() {
+        return routeViewMetadata;
     }
 
-    public void setComponentMetadata(ComponentMetadata componentMetadata) {
-        this.componentMetadata = componentMetadata;
+    public void setRouteViewMetadata(RouteViewMetadata routeViewMetadata) {
+        this.routeViewMetadata = routeViewMetadata;
     }
 
     public FlaskClass getFlaskClass() {
@@ -46,8 +46,8 @@ public class FlaskComponent extends ComponentNode {
 
     @Override
     public String toString() {
-        return "\nFlaskComponent{" +
-                "\ncomponentMetadata=" + componentMetadata +
+        return "\nFlaskRouteView{" +
+                "\nrouteViewMetadata=" + routeViewMetadata +
                 ", \nflaskClass=" + flaskClass +
                 ", \nifBlockRawCode=" + ifBlockRawCode +
                 ", \npreReturnRawLines=" + preReturnRawLines +

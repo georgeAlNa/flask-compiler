@@ -1,6 +1,6 @@
 package code_generation;
 
-public class ProductsListView extends BaseComponentView {
+public class ProductsListView extends BaseGeneratedView {
 
     private final String template;
     private final String styles;

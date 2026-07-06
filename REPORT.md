@@ -105,7 +105,7 @@
   - `ProductRequiredFieldsCheck`
   - `InvalidPropertyAccessCheck`
   - `EmptyDataListCheck`
-  - `ComponentRequirementsCheck`
+  - `RouteTemplateRequirementsCheck`
 - الأخطاء تحتوي رسالة، تفاصيل، نوع، line، column عبر `SemanticError`.
 - `Main.java` يوقف التوليد عند وجود semantic errors.
 - تم التحقق بعينة `samples/sample_semantic_full.txt`، والنتيجة كانت `Semantic Errors (10)` مع إيقاف التوليد.
@@ -115,11 +115,11 @@
 
 - موجود في مجلد `code_generation/`.
 - الملفات المهمة:
-  - `BaseComponentView.java`
-  - `GenericView.java`
+  - `BaseGeneratedView.java`
+  - `GenericRouteView.java`
   - `ViewFactory.java`
-  - `ComponentFileSaver.java`
-  - `GeneratedComponent.java`
+  - `GeneratedFlaskAppSaver.java`
+  - `GeneratedRouteView.java`
 - يولد:
   - `generated_components/app.py`
   - `generated_components/templates/base.html`
@@ -235,7 +235,7 @@
 
 ### مرحلة Generator
 
-- إزالة أي duplication محتمل في إضافة delete button، لأنه يضاف في `Main.withDeleteButton(...)` ويوجد أيضاً منطق مشابه في `ComponentFileSaver`.
+- إزالة أي duplication محتمل في إضافة delete button، لأنه يضاف في `Main.withDeleteButton(...)` ويوجد أيضاً منطق مشابه في `GeneratedFlaskAppSaver`.
 - استخدام `generated_components_smoke_test.py` لاستدعاء الصفحات الأساسية عبر Flask test client عند توفر Flask.
 - التأكد من عدم الكتابة فوق `generated_components` عند وجود semantic errors.
 

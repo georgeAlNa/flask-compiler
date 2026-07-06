@@ -2,10 +2,10 @@ import FlaskGen.FlaskLexer;
 import FlaskGen.FlaskParser;
 import classes.Application;
 import classes.BaseVisitor;
-import classes.FlaskComponent;
-import code_generation.BaseComponentView;
-import code_generation.ComponentFileSaver;
-import code_generation.GeneratedComponent;
+import classes.FlaskRouteView;
+import code_generation.BaseGeneratedView;
+import code_generation.GeneratedFlaskAppSaver;
+import code_generation.GeneratedRouteView;
 import code_generation.ViewFactory;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -50,12 +50,12 @@ public class Main {
             return;
         }
 
-        List<FlaskComponent> components = program.getComponents();
-        List<GeneratedComponent> generatedList = new ArrayList<>();
+        List<FlaskRouteView> routeViews = program.getRouteViews();
+        List<GeneratedRouteView> generatedList = new ArrayList<>();
 
-        for (FlaskComponent component : components) {
-            BaseComponentView view = ViewFactory.createView(component);
-            GeneratedComponent generated = withDeleteButton(view.generate());
+        for (FlaskRouteView routeView : routeViews) {
+            BaseGeneratedView view = ViewFactory.createView(routeView);
+            GeneratedRouteView generated = withDeleteButton(view.generate());
             generatedList.add(generated);
 
             System.out.println("=== " + view.getClass().getSimpleName() + " ===");
@@ -66,7 +66,7 @@ public class Main {
         }
 
         if (hasProductsData(program.getGlobalDeclarations())) {
-            GeneratedComponent deleteProduct = new GeneratedComponent(
+            GeneratedRouteView deleteProduct = new GeneratedRouteView(
                     generateDeleteProductRoute(),
                     "",
                     "",
@@ -80,7 +80,7 @@ public class Main {
             System.out.println("\n" + "-".repeat(50) + "\n");
         }
 
-        ComponentFileSaver.saveComponents(generatedList, OUTPUT_DIR, program.getGlobalDeclarations());
+        GeneratedFlaskAppSaver.saveGeneratedViews(generatedList, OUTPUT_DIR, program.getGlobalDeclarations());
 
         printAst(program);
 
@@ -120,19 +120,19 @@ public class Main {
                 """;
     }
 
-    private static GeneratedComponent withDeleteButton(GeneratedComponent component) {
-        String html = component.getHtml();
+    private static GeneratedRouteView withDeleteButton(GeneratedRouteView routeView) {
+        String html = routeView.getHtml();
         if (html == null || html.isBlank()) {
-            return component;
+            return routeView;
         }
 
-        if ("Products".equals(component.getComponentName())) {
+        if ("Products".equals(routeView.getViewName())) {
             html = addDeleteButtonToProductsTemplate(html);
-        } else if ("ProductDetail".equals(component.getComponentName())) {
+        } else if ("ProductDetail".equals(routeView.getViewName())) {
             html = addDeleteButtonToProductDetailTemplate(html);
         }
 
-        return new GeneratedComponent(component.getPy(), html, component.getCss(), component.getComponentName());
+        return new GeneratedRouteView(routeView.getPy(), html, routeView.getCss(), routeView.getViewName());
     }
 
     private static String addDeleteButtonToProductsTemplate(String html) {

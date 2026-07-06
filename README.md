@@ -28,6 +28,17 @@ By default, the build scripts run `samples/sample.txt`. To run a different sampl
 
 The compiler stops code generation when syntax or semantic errors are found.
 
+## Compiler pipeline
+
+The project follows the required compiler stages:
+
+1. Tokens: ANTLR tokenizes the DSL input using `FlaskLexer.g4`.
+2. Parse Tree: ANTLR builds the parser tree using `FlaskParser.g4`.
+3. AST: `BaseVisitor` converts the parse tree into Python AST and Jinja2 AST nodes.
+4. Symbol Table: declarations, routes, template variables, and Python-to-Jinja bindings are recorded in `SymbolTable`.
+5. Semantic Analysis: checks in `semantic_check/` validate routes, variables, template bindings, product data, and property access.
+6. Code Generation: `code_generation/` writes the Flask app, Jinja templates, CSS, and generated view files under `generated_components/`.
+
 ## Run the generated Flask app
 
 The compiler writes output to `generated_components/`.

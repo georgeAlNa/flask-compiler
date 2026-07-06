@@ -3,7 +3,7 @@ package code_generation;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BaseComponentView implements View {
+public abstract class BaseGeneratedView implements View {
 
     protected abstract String getClassName();
 
@@ -28,7 +28,7 @@ public abstract class BaseComponentView implements View {
     /**
      * Generate the Flask route function for app.py
      */
-    protected String assembleComponent() {
+    protected String assembleRouteFunction() {
         StringBuilder sb = new StringBuilder();
         String funcName = toSnakeCase(getClassName());
         if (funcName.equals("app"))
@@ -60,7 +60,7 @@ public abstract class BaseComponentView implements View {
         // conditions
         String preReturnCode = "";
         String ifBlockCode = "";
-        if (this instanceof GenericView gv) {
+        if (this instanceof GenericRouteView gv) {
             preReturnCode = gv.getPreReturnCode();
             ifBlockCode = gv.getIfBlockCode();
         }
@@ -193,11 +193,11 @@ public abstract class BaseComponentView implements View {
     }
 
     @Override
-    public final GeneratedComponent generate() {
-        String pyCode = assembleComponent();
+    public final GeneratedRouteView generate() {
+        String pyCode = assembleRouteFunction();
         String htmlCode = assembleHtml();
         String cssCode = assembleCss();
-        return new GeneratedComponent(pyCode, htmlCode, cssCode, getClassName());
+        return new GeneratedRouteView(pyCode, htmlCode, cssCode, getClassName());
     }
 
     private String toSnakeCase(String className) {

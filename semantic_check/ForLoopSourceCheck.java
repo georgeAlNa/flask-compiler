@@ -74,7 +74,7 @@ public class ForLoopSourceCheck implements SemanticCheck {
             if (sourceRow == null) {
                 errors.add(new SemanticError(
                         "{% for %} iterates over undefined source: '" + sourceVar + "'",
-                        "Variable '" + sourceVar + "' used in for loop is not defined in component",
+                        "Variable '" + sourceVar + "' used in for loop is not defined in the route view",
                         row.getLine(), row.getColumn(), ErrorType.REFERENCE));
             } else if (sourceRow.getDataType() != null
                     && !"list".equals(sourceRow.getDataType())

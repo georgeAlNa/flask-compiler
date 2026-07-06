@@ -5,31 +5,31 @@ import python_ast.PythonProgramNode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Application extends ComponentNode {
+public class Application extends CompilerAstNode {
 
-    private List<FlaskComponent> components = new ArrayList<>();
+    private List<FlaskRouteView> routeViews = new ArrayList<>();
     private PythonProgramNode pythonProgramNode;
     /**
      * Raw Python text of global variable declarations, e.g. "products_data = [...]"
      */
     private List<String> globalDeclarations = new ArrayList<>();
 
-    public List<FlaskComponent> getComponents() {
-        return components;
+    public List<FlaskRouteView> getRouteViews() {
+        return routeViews;
     }
 
-    public void addComponent(FlaskComponent component) {
-        if (component != null) {
-            components.add(component);
-            addChild(component);
+    public void addRouteView(FlaskRouteView routeView) {
+        if (routeView != null) {
+            routeViews.add(routeView);
+            addChild(routeView);
         }
     }
 
-    public void setComponents(List<FlaskComponent> components) {
-        this.components = components;
-        if (components != null) {
-            for (FlaskComponent component : components) {
-                addChild(component);
+    public void setRouteViews(List<FlaskRouteView> routeViews) {
+        this.routeViews = routeViews;
+        if (routeViews != null) {
+            for (FlaskRouteView routeView : routeViews) {
+                addChild(routeView);
             }
         }
     }
@@ -53,12 +53,12 @@ public class Application extends ComponentNode {
 
     public String printJinjaAst() {
         StringBuilder builder = new StringBuilder();
-        if (components != null) {
-            for (FlaskComponent component : components) {
-                if (component.getComponentMetadata() == null) {
+        if (routeViews != null) {
+            for (FlaskRouteView routeView : routeViews) {
+                if (routeView.getRouteViewMetadata() == null) {
                     continue;
                 }
-                for (MetadataEntry entry : component.getComponentMetadata().getMetadataEntries()) {
+                for (MetadataEntry entry : routeView.getRouteViewMetadata().getMetadataEntries()) {
                     if (entry instanceof TemplateEntry templateEntry
                             && templateEntry.getInlineTemplate() != null
                             && templateEntry.getInlineTemplate().getTemplateNode() != null) {
@@ -78,9 +78,9 @@ public class Application extends ComponentNode {
     public String toString() {
         StringBuilder sb = new StringBuilder("\nApplication{");
         sb.append("\npythonAst=\n").append(printPythonAst());
-        if (components != null) {
-            for (FlaskComponent component : components) {
-                sb.append("\n").append(component);
+        if (routeViews != null) {
+            for (FlaskRouteView routeView : routeViews) {
+                sb.append("\n").append(routeView);
             }
         }
         sb.append("\n}");

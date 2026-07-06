@@ -18,7 +18,7 @@ public class RouteUniquenessCheck implements SemanticCheck {
                 if (routes.contains(route)) {
                     errors.add(new SemanticError(
                         "Duplicate route defined: '" + route + "'",
-                        "Each Flask component must have a unique route",
+                        "Each Flask route view must have a unique route",
                         row.getLine(), row.getColumn(), ErrorType.SEMANTIC
                     ));
                 } else {

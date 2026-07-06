@@ -32,6 +32,7 @@ Application
         JinjaVariableNode(expression="p.price")
         JinjaVariableNode(expression="p.id")
         JinjaVariableNode(expression="detailsLabel")
+        HtmlElementNode(tag="form", action="/product/delete/{{ p.id }}", method="post")
 
     RouteNode(route="/product/add", function="add_product", methods="GET,POST")
       AssignmentNode(name="addTitle", value=""Add New Product"")
@@ -55,6 +56,7 @@ Application
         JinjaVariableNode(expression="product.price")
         JinjaVariableNode(expression="product.details")
         JinjaVariableNode(expression="backLabel")
+        HtmlElementNode(tag="form", action="/product/delete/{{ product.id }}", method="post")
 
     Generated Action Route
       RouteNode(route="/product/delete/<int:id>", function="delete_product", methods="POST")

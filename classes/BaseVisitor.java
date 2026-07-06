@@ -54,8 +54,7 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
         return symbolTable;
     }
 
-    // â”€â”€â”€ Application Root
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Application root
 
     @Override
     public Application visitApplicationRoot(FlaskParser.ApplicationRootContext ctx) {
@@ -71,9 +70,9 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
             visit(ga);
         }
         for (FlaskParser.RouteDefinitionContext rd : ctx.routeDefinition()) {
-            FlaskComponent component = (FlaskComponent) visit(rd);
-            if (component != null) {
-                application.addComponent(component);
+            FlaskRouteView routeView = (FlaskRouteView) visit(rd);
+            if (routeView != null) {
+                application.addRouteView(routeView);
             }
         }
         if (ctx.mainGuard() != null) {
@@ -89,8 +88,7 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
         return application;
     }
 
-    // â”€â”€â”€ Import Statement
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Import statement
 
     @Override
     public Object visitImportDef(FlaskParser.ImportDefContext ctx) {
@@ -104,8 +102,7 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
         return null;
     }
 
-    // â”€â”€â”€ App Declaration
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // App declaration
 
     @Override
     public Object visitAppDef(FlaskParser.AppDefContext ctx) {
@@ -116,8 +113,7 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
         return null;
     }
 
-    // â”€â”€â”€ Global Assignment
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Global assignment
 
     @Override
     public Object visitGlobalListDef(FlaskParser.GlobalListDefContext ctx) {
@@ -131,8 +127,7 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
         return null;
     }
 
-    // â”€â”€â”€ Main Guard
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Main guard
 
     @Override
     public Object visitMainGuardDef(FlaskParser.MainGuardDefContext ctx) {
@@ -140,13 +135,12 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
         return null;
     }
 
-    // â”€â”€â”€ Route Definition
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Route definition
 
     @Override
-    public FlaskComponent visitRouteDef(FlaskParser.RouteDefContext ctx) {
-        FlaskComponent component = new FlaskComponent();
-        ComponentMetadata metadata = new ComponentMetadata();
+    public FlaskRouteView visitRouteDef(FlaskParser.RouteDefContext ctx) {
+        FlaskRouteView routeView = new FlaskRouteView();
+        RouteViewMetadata metadata = new RouteViewMetadata();
 
         // Extract route path and optional methods from decorator
         FlaskParser.RouteDecoratorDefContext decCtx = (FlaskParser.RouteDecoratorDefContext) ctx.routeDecorator();
@@ -209,7 +203,7 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
                     if (isComplex) {
                         // Store as raw pre-return line for verbatim emission
                         String rawLine = varName + " = " + varValue;
-                        component.getPreReturnRawLines().add(rawLine);
+                        routeView.getPreReturnRawLines().add(rawLine);
                     }
 
                     PropertyDeclaration prop = new PropertyDeclaration();
@@ -266,7 +260,7 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
 
                     // Capture the entire if-block as raw Python source text
                     String rawIfBlock = getRawText(ifDef);
-                    component.getIfBlockRawCode().add(rawIfBlock);
+                    routeView.getIfBlockRawCode().add(rawIfBlock);
 
                     // Visit nested statements inside if block for symbol table
                     for (FlaskParser.InnerBodyStatementContext innerStmt : ifDef.innerBodyStatement()) {
@@ -308,14 +302,13 @@ public class BaseVisitor extends FlaskParserBaseVisitor<Object> {
             flaskClass.setClassBody(classBody);
         }
 
-        component.setComponentMetadata(metadata);
-        component.setFlaskClass(flaskClass);
+        routeView.setRouteViewMetadata(metadata);
+        routeView.setFlaskClass(flaskClass);
         currentScope = "global";
-        return component;
+        return routeView;
     }
 
-    // â”€â”€â”€ Helpers
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Helpers
 
     private void addRow(String type, String value, Token token) {
         addRow(type, value, token, currentScope, "PYTHON", null, false, false);

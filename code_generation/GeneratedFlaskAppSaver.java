@@ -7,13 +7,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class ComponentFileSaver {
+public class GeneratedFlaskAppSaver {
 
-    public static void saveComponents(List<GeneratedComponent> components, String outputDir) {
-        saveComponents(components, outputDir, null);
+    public static void saveGeneratedViews(List<GeneratedRouteView> routeViews, String outputDir) {
+        saveGeneratedViews(routeViews, outputDir, null);
     }
 
-    public static void saveComponents(List<GeneratedComponent> components, String outputDir,
+    public static void saveGeneratedViews(List<GeneratedRouteView> routeViews, String outputDir,
             List<String> globalDeclarations) {
         try {
             // Clean the output directory before saving
@@ -39,9 +39,9 @@ public class ComponentFileSaver {
                 }
             }
 
-            for (GeneratedComponent component : components) {
-                if (component.getPy() != null && !component.getPy().trim().isEmpty()) {
-                    appPy.append(component.getPy()).append("\n");
+            for (GeneratedRouteView routeView : routeViews) {
+                if (routeView.getPy() != null && !routeView.getPy().trim().isEmpty()) {
+                    appPy.append(routeView.getPy()).append("\n");
                 }
             }
 
@@ -55,11 +55,11 @@ public class ComponentFileSaver {
 
             // 3) Save HTML templates into templates/ folder
             int savedTemplateCount = 0;
-            for (GeneratedComponent component : components) {
-                String name = component.getComponentName();
-                if (component.getHtml() != null && !component.getHtml().trim().isEmpty()) {
-                    String html = "Products".equals(name) ? addDeleteButtonToProductsTemplate(component.getHtml())
-                            : component.getHtml();
+            for (GeneratedRouteView routeView : routeViews) {
+                String name = routeView.getViewName();
+                if (routeView.getHtml() != null && !routeView.getHtml().trim().isEmpty()) {
+                    String html = "Products".equals(name) ? addDeleteButtonToProductsTemplate(routeView.getHtml())
+                            : routeView.getHtml();
                     saveToFile(outputDir + "/templates/" + name + ".html", html);
                     savedTemplateCount++;
                 }
@@ -68,15 +68,15 @@ public class ComponentFileSaver {
             // 4) Generate professional CSS
             StringBuilder allCss = new StringBuilder();
             allCss.append(generateBaseCss());
-            for (GeneratedComponent component : components) {
-                if (component.getCss() != null && !component.getCss().trim().isEmpty()) {
-                    allCss.append("\n/* === ").append(component.getComponentName()).append(" Styles === */\n");
-                    allCss.append(component.getCss()).append("\n");
+            for (GeneratedRouteView routeView : routeViews) {
+                if (routeView.getCss() != null && !routeView.getCss().trim().isEmpty()) {
+                    allCss.append("\n/* === ").append(routeView.getViewName()).append(" Styles === */\n");
+                    allCss.append(routeView.getCss()).append("\n");
                 }
             }
             saveToFile(outputDir + "/static/style.css", allCss.toString());
 
-            System.out.println("\nSaved " + components.size() + " component(s) to: " + outputDir);
+            System.out.println("\nSaved " + routeViews.size() + " generated view(s) to: " + outputDir);
             System.out.println("  - " + outputDir + "/app.py");
             System.out.println("  - " + outputDir + "/templates/base.html");
             System.out.println("  - " + outputDir + "/templates/ (" + savedTemplateCount + " pages)");

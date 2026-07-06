@@ -8,7 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-public class ComponentRequirementsCheck implements SemanticCheck {
+public class RouteTemplateRequirementsCheck implements SemanticCheck {
 
     private static final String OUTPUT_FILE = "semantic-errors.txt";
 

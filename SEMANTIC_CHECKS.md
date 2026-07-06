@@ -14,7 +14,7 @@ The combined demonstration sample is `samples/sample_semantic_full.txt`, which s
 | `ProductRequiredFieldsCheck` | Product dictionary misses required fields | Product item without `name` or `price` | `samples/sample_semantic_full.txt` |
 | `InvalidPropertyAccessCheck` | Template reads a property not present in the data source | `{{ p.unknownField }}` | `samples/sample_semantic_full.txt` |
 | `EmptyDataListCheck` | Data list is empty or invalid for display | `products_data = []` or invalid list content | `samples/sample_semantic_full.txt` |
-| `ComponentRequirementsCheck` | Route/component is missing required template structure | Route without a template when one is required | `samples/sample_errors.txt` or custom route-only sample |
+| `RouteTemplateRequirementsCheck` | Route view is missing required template structure | Route without a template when one is required | `samples/sample_errors.txt` or custom route-only sample |
 
 Expected command:
 

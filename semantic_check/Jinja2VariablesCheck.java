@@ -52,7 +52,7 @@ public class Jinja2VariablesCheck implements SemanticCheck {
                 if (!classProperties.contains(varName) && !isDefinedInSymbolTable(varName, symbolTable)) {
                     SemanticError err = new SemanticError(
                             "Undefined variable in template: '{{ " + varName + " }}'",
-                            "Variable '" + varName + "' is used in template but not defined in component class",
+                            "Variable '" + varName + "' is used in template but not defined in the route view",
                             templateRow.getLine(), templateRow.getColumn(), ErrorType.REFERENCE);
                     errors.add(err);
                 }

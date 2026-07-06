@@ -3,7 +3,7 @@ package classes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComponentMetadata extends ComponentNode {
+public class RouteViewMetadata extends CompilerAstNode {
 
     private List<MetadataEntry> metadataEntries = new ArrayList<>();
 
@@ -17,7 +17,7 @@ public class ComponentMetadata extends ComponentNode {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("\nComponentMetadata{");
+        StringBuilder sb = new StringBuilder("\nRouteViewMetadata{");
         if (metadataEntries != null) {
             for (MetadataEntry entry : metadataEntries) {
                 sb.append("\n").append(entry);

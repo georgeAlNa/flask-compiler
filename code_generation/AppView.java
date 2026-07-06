@@ -1,6 +1,6 @@
 package code_generation;
 
-public class AppView extends BaseComponentView {
+public class AppView extends BaseGeneratedView {
 
     private final String template;
     private final String styles;

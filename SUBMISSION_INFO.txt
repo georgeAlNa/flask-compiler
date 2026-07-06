@@ -1,10 +1,10 @@
 GitHub Repository:
-<add final GitHub repository URL before submission>
+https://github.com/georgeAlNa/flask-compiler.git
 
 Group Members:
-1. <add first member name>
-2. <add second member name>
-3. <add third member name>
+1. georgeAlNa
+2. <add second member name if applicable>
+3. <add third member name if applicable>
 
 Project:
 Flask Compiler - Python/Flask/Jinja2/HTML/CSS compiler project

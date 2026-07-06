@@ -1,7 +1,7 @@
 package code_generation;
 
-import classes.ComponentMetadata;
-import classes.FlaskComponent;
+import classes.RouteViewMetadata;
+import classes.FlaskRouteView;
 import classes.InlineTemplate;
 import classes.RouteEntry;
 import classes.StylesContent;
@@ -14,27 +14,27 @@ import java.util.HashSet;
 
 public class ViewFactory {
 
-    public static BaseComponentView createView(FlaskComponent component) {
-        ComponentMetadata metadata = component.getComponentMetadata();
+    public static BaseGeneratedView createView(FlaskRouteView routeView) {
+        RouteViewMetadata metadata = routeView.getRouteViewMetadata();
         String template = extractTemplate(metadata);
         String styles = extractStyles(metadata);
         String route = extractRoute(metadata);
-        String logic = extractLogic(component);
-        String funcName = component.getFlaskClass() != null
-                ? component.getFlaskClass().getClassName()
+        String logic = extractLogic(routeView);
+        String funcName = routeView.getFlaskClass() != null
+                ? routeView.getFlaskClass().getClassName()
                 : "unknown";
         String className = toClassName(funcName);
         java.util.List<String> methods = extractMethods(metadata);
 
         // Extract raw if-block code and pre-return code for verbatim emission
-        String ifBlockCode = extractIfBlockCode(component);
-        String preReturnCode = extractPreReturnCode(component);
+        String ifBlockCode = extractIfBlockCode(routeView);
+        String preReturnCode = extractPreReturnCode(routeView);
 
-        return new GenericView(funcName, className, template, styles, logic, route, methods,
+        return new GenericRouteView(funcName, className, template, styles, logic, route, methods,
                 ifBlockCode, preReturnCode);
     }
 
-    private static String extractTemplate(ComponentMetadata metadata) {
+    private static String extractTemplate(RouteViewMetadata metadata) {
         return metadata.getMetadataEntries().stream()
                 .filter(e -> e instanceof TemplateEntry)
                 .map(e -> {
@@ -59,7 +59,7 @@ public class ViewFactory {
                 .findFirst().orElse("");
     }
 
-    private static String extractStyles(ComponentMetadata metadata) {
+    private static String extractStyles(RouteViewMetadata metadata) {
         return metadata.getMetadataEntries().stream()
                 .filter(e -> e instanceof StylesEntry)
                 .map(e -> {
@@ -80,14 +80,14 @@ public class ViewFactory {
                 .findFirst().orElse("");
     }
 
-    private static String extractRoute(ComponentMetadata metadata) {
+    private static String extractRoute(RouteViewMetadata metadata) {
         return metadata.getMetadataEntries().stream()
                 .filter(e -> e instanceof RouteEntry)
                 .map(e -> ((RouteEntry) e).getRoute())
                 .findFirst().orElse("/");
     }
 
-    private static java.util.List<String> extractMethods(ComponentMetadata metadata) {
+    private static java.util.List<String> extractMethods(RouteViewMetadata metadata) {
         return metadata.getMetadataEntries().stream()
                 .filter(e -> e instanceof RouteEntry)
                 .map(e -> ((RouteEntry) e).getMethods())
@@ -95,18 +95,18 @@ public class ViewFactory {
                 .findFirst().orElse(null);
     }
 
-    private static String extractLogic(FlaskComponent component) {
+    private static String extractLogic(FlaskRouteView routeView) {
         StringBuilder logic = new StringBuilder();
-        if (component.getFlaskClass() == null)
+        if (routeView.getFlaskClass() == null)
             return "";
-        var classBody = component.getFlaskClass().getClassBody();
+        var classBody = routeView.getFlaskClass().getClassBody();
         if (classBody == null)
             return "";
 
         // Collect names of properties that are already covered by preReturnRawLines
         // to avoid duplicate emission
         Set<String> preReturnVarNames = new HashSet<>();
-        for (String line : component.getPreReturnRawLines()) {
+        for (String line : routeView.getPreReturnRawLines()) {
             int eq = line.indexOf('=');
             if (eq > 0) {
                 preReturnVarNames.add(line.substring(0, eq).trim());
@@ -131,8 +131,8 @@ public class ViewFactory {
     /**
      * Combine all raw if-block code fragments into a single string.
      */
-    private static String extractIfBlockCode(FlaskComponent component) {
-        List<String> blocks = component.getIfBlockRawCode();
+    private static String extractIfBlockCode(FlaskRouteView routeView) {
+        List<String> blocks = routeView.getIfBlockRawCode();
         if (blocks.isEmpty())
             return "";
         StringBuilder sb = new StringBuilder();
@@ -147,8 +147,8 @@ public class ViewFactory {
     /**
      * Combine all pre-return raw lines into a single string.
      */
-    private static String extractPreReturnCode(FlaskComponent component) {
-        List<String> lines = component.getPreReturnRawLines();
+    private static String extractPreReturnCode(FlaskRouteView routeView) {
+        List<String> lines = routeView.getPreReturnRawLines();
         if (lines.isEmpty())
             return "";
         StringBuilder sb = new StringBuilder();

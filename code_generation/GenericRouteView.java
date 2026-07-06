@@ -1,6 +1,6 @@
 package code_generation;
 
-public class GenericView extends BaseComponentView {
+public class GenericRouteView extends BaseGeneratedView {
 
     private final String endpointName;
     private final String className;
@@ -12,17 +12,17 @@ public class GenericView extends BaseComponentView {
     private final String ifBlockCode;
     private final String preReturnCode;
 
-    public GenericView(String endpointName, String className, String template, String styles, String logic,
+    public GenericRouteView(String endpointName, String className, String template, String styles, String logic,
             String route) {
         this(endpointName, className, template, styles, logic, route, null, "", "");
     }
 
-    public GenericView(String endpointName, String className, String template, String styles, String logic,
+    public GenericRouteView(String endpointName, String className, String template, String styles, String logic,
             String route, java.util.List<String> routeMethods) {
         this(endpointName, className, template, styles, logic, route, routeMethods, "", "");
     }
 
-    public GenericView(String endpointName, String className, String template, String styles, String logic,
+    public GenericRouteView(String endpointName, String className, String template, String styles, String logic,
             String route, java.util.List<String> routeMethods, String ifBlockCode, String preReturnCode) {
         this.endpointName = endpointName;
         this.className = className;
@@ -37,7 +37,7 @@ public class GenericView extends BaseComponentView {
 
     @Override
     protected String getClassName() {
-        return className.isEmpty() ? "CustomComponent" : className;
+        return className.isEmpty() ? "CustomRouteView" : className;
     }
 
     @Override

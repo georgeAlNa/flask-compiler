@@ -1,17 +1,17 @@
 package code_generation;
 
-public class GeneratedComponent {
+public class GeneratedRouteView {
 
     private final String py;
     private final String html;
     private final String css;
-    private final String componentName;
+    private final String viewName;
 
-    public GeneratedComponent(String py, String html, String css, String componentName) {
+    public GeneratedRouteView(String py, String html, String css, String viewName) {
         this.py            = py;
         this.html          = html;
         this.css           = css;
-        this.componentName = componentName;
+        this.viewName = viewName;
     }
 
     public String getPy() {
@@ -26,11 +26,7 @@ public class GeneratedComponent {
         return css;
     }
 
-    public String getComponentName() {
-        return componentName;
-    }
-
-    public String getTs() {
-        return py;
+    public String getViewName() {
+        return viewName;
     }
 }
