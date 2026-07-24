@@ -4,18 +4,19 @@
 
 {% block content %}
 <div class="grid">
-        {% for p in items %}
-        <div class="card">
-            <img class="product-image" src="{{ p.image }}" />
-            <h3>{{ p.name }}</h3>
-            <p class="price">{{ p.price }}</p>
-            <div>
-                <a href="/product/{{ p.id }}">{{ detailsLabel }}</a>
+    {% for p in items %}
+    <div class="card">
+        <img class="product-image" src="{{ p.image }}" />
+        <h3>{{ p.name }}</h3>
+        <p class="price">{{ p.price }}</p>
+        <div>
+            <a href="/product/{{ p.id }}">{{ detailsLabel }}</a>
+                <a href="/product/edit/{{ p.id }}">Edit</a>
                 <form method="post" action="/product/delete/{{ p.id }}" class="inline-form">
                     <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
-            </div>
         </div>
-        {% endfor %}
     </div>
+    {% endfor %}
+</div>
 {% endblock %}

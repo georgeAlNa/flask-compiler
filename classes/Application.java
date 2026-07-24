@@ -1,5 +1,6 @@
 package classes;
 
+import jinja_ast.TemplateNode;
 import python_ast.PythonProgramNode;
 
 import java.util.ArrayList;
@@ -53,21 +54,62 @@ public class Application extends CompilerAstNode {
 
     public String printJinjaAst() {
         StringBuilder builder = new StringBuilder();
-        if (routeViews != null) {
-            for (FlaskRouteView routeView : routeViews) {
-                if (routeView.getRouteViewMetadata() == null) {
-                    continue;
+        for (TemplateNode templateNode : getJinjaTemplateNodes()) {
+            builder.append(templateNode.print()).append("\n");
+        }
+        return builder.length() == 0 ? "Jinja2 AST is empty" : builder.toString();
+    }
+
+    public String pythonAstJson() {
+        return pythonProgramNode != null
+                ? pythonProgramNode.toJson()
+                : "{\n  \"type\": \"PythonProgramNode\",\n  \"label\": \"Python AST is empty\",\n  \"children\": []\n}";
+    }
+
+    public String jinjaAstJson() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("{\n");
+        builder.append("  \"type\": \"JinjaAst\",\n");
+        builder.append("  \"templates\": [");
+        List<TemplateNode> templates = getJinjaTemplateNodes();
+        if (!templates.isEmpty()) {
+            builder.append("\n");
+            for (int i = 0; i < templates.size(); i++) {
+                builder.append(indentJson(templates.get(i).toJson(), "    "));
+                if (i < templates.size() - 1) {
+                    builder.append(",");
                 }
-                for (MetadataEntry entry : routeView.getRouteViewMetadata().getMetadataEntries()) {
-                    if (entry instanceof TemplateEntry templateEntry
-                            && templateEntry.getInlineTemplate() != null
-                            && templateEntry.getInlineTemplate().getTemplateNode() != null) {
-                        builder.append(templateEntry.getInlineTemplate().getTemplateNode().print()).append("\n");
-                    }
+                builder.append("\n");
+            }
+            builder.append("  ");
+        }
+        builder.append("]\n");
+        builder.append("}\n");
+        return builder.toString();
+    }
+
+    private List<TemplateNode> getJinjaTemplateNodes() {
+        List<TemplateNode> templates = new ArrayList<>();
+        if (routeViews == null) {
+            return templates;
+        }
+        for (FlaskRouteView routeView : routeViews) {
+            if (routeView.getRouteViewMetadata() == null) {
+                continue;
+            }
+            for (MetadataEntry entry : routeView.getRouteViewMetadata().getMetadataEntries()) {
+                if (entry instanceof TemplateEntry templateEntry
+                        && templateEntry.getInlineTemplate() != null
+                        && templateEntry.getInlineTemplate().getTemplateNode() != null) {
+                    templates.add(templateEntry.getInlineTemplate().getTemplateNode());
                 }
             }
         }
-        return builder.length() == 0 ? "Jinja2 AST is empty" : builder.toString();
+        return templates;
+    }
+
+    private String indentJson(String json, String indent) {
+        return indent + json.replace("\n", "\n" + indent);
     }
 
     public String printFullAst() {

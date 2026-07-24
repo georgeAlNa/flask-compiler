@@ -1,7 +1,8 @@
 @echo off
 set ANTLR_JAR=antlr4-4.13.1-complete.jar
 set GEN_DIR=FlaskGen
-set SAMPLE=samples\sample.txt
+set SAMPLE=official_input
+rem set SAMPLE=samples\sample.txt
 rem set SAMPLE=samples\sample_basic.txt
 rem set SAMPLE=samples\sample_routes_nav.txt
 rem set SAMPLE=samples\sample_for_loop.txt

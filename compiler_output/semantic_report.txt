@@ -1,0 +1,66 @@
+Semantic Analysis Report
+========================
+Generated at: 2026-07-23T23:54:15.685193100
+
+Semantic Errors (10)
+
+Error #1
+Type: REFERENCE
+Message: Undefined Jinja2 variable: '{{ missingVar }}'
+Details: Variable is used in a template but was not defined in Python data or route context
+Location: Line 17, Column 7
+
+Error #2
+Type: REFERENCE
+Message: Undefined Python variable: 'missingPythonSource'
+Details: Variable is used in expression 'brokenValue = missingPythonSource' before being defined in scope
+Location: Line 13, Column 4
+
+Error #3
+Type: TYPE
+Message: {% for %} iterates over non-list source: 'nonList'
+Details: Variable 'nonList' has type 'string' but a Jinja2 for loop requires a list-like value
+Location: Line 24, Column 4
+
+Error #4
+Type: REFERENCE
+Message: {% for %} iterates over undefined source: 'unknownList'
+Details: Variable 'unknownList' used in for loop is not defined in the route view
+Location: Line 27, Column 4
+
+Error #5
+Type: SEMANTIC
+Message: Duplicate route defined: '/broken'
+Details: Each Flask route view must have a unique route
+Location: Line 37, Column 0
+
+Error #6
+Type: SEMANTIC
+Message: Duplicate route function defined: 'broken'
+Details: Each Flask route function should have a unique Python function name
+Location: Line 49, Column 0
+
+Error #7
+Type: REFERENCE
+Message: Undefined variable in Jinja2 if condition: 'missingFlag'
+Details: The if condition references a variable that is not defined in Python data or template scope
+Location: Line 18, Column 4
+
+Error #8
+Type: STRUCTURAL
+Message: Product item is missing required fields
+Details: Product #1 must contain both 'name' and 'price'
+Location: Line 5, Column 0
+
+Error #9
+Type: REFERENCE
+Message: Invalid property access: 'p.unknownField'
+Details: Property 'unknownField' does not exist in data source 'products_data'
+Location: Line 22, Column 10
+
+Error #10
+Type: STRUCTURAL
+Message: Empty or invalid data list: 'products_data'
+Details: Data lists passed to Jinja2 should contain at least one dictionary item
+Location: Line 5, Column 0
+

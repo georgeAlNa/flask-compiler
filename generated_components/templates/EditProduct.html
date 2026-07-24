@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Product{% endblock %}
+
+{% block content %}
+<section>
+    <h2>{{ editTitle }}</h2>
+    <form method="post">
+        <input name="name" value="{{ product.name }}" required />
+        <input type="number" name="price" value="{{ product.price }}" required />
+        <input name="image" value="{{ product.image }}" required />
+        <textarea name="description">{{ product.details }}</textarea>
+        <button type="submit">{{ saveLabel }}</button>
+        <a href="/product/{{ product.id }}">{{ backLabel }}</a>
+    </form>
+</section>
+{% endblock %}

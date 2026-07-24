@@ -4,13 +4,14 @@
 
 {% block content %}
 <section class="card">
-        <img class="product-image" src="{{ product.image }}" />
-        <h2>{{ product.name }}</h2>
-        <p class="price">{{ product.price }}</p>
-        <p>{{ product.details }}</p>
-        <a href="/products">{{ backLabel }}</a>
+    <img class="product-image" src="{{ product.image }}" />
+    <h2>{{ product.name }}</h2>
+    <p class="price">{{ product.price }}</p>
+    <p>{{ product.details }}</p>
+    <a href="/products">{{ backLabel }}</a>
+        <a href="/product/edit/{{ product.id }}">Edit</a>
         <form method="post" action="/product/delete/{{ product.id }}" class="inline-form">
             <button type="submit" class="btn btn-danger">Delete</button>
         </form>
-    </section>
+</section>
 {% endblock %}

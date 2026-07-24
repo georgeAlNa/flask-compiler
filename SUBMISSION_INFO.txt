@@ -2,9 +2,15 @@ GitHub Repository:
 https://github.com/georgeAlNa/flask-compiler.git
 
 Group Members:
-1. georgeAlNa
-2. <add second member name if applicable>
-3. <add third member name if applicable>
+
 
 Project:
 Flask Compiler - Python/Flask/Jinja2/HTML/CSS compiler project
+
+Final Verification:
+- build.bat passed
+- run_tests.bat passed
+- official input directory: official_input/
+- generated Flask output: generated_components/
+- rendered HTML output: output/
+- compiler artifacts: compiler_output/

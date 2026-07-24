@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="main-content">
+        <section>
+            <h2>Edit Product</h2>
+            <form method="post">
+                <input name="name" value="Laptop" required />
+                <input type="number" name="price" value="1200" required />
+                <input name="image" value="https://via.placeholder.com/150" required />
+                <textarea name="description">Powerful laptop</textarea>
+                <button type="submit">Save Changes</button>
+                <a href="/product/1">Back to Product</a>
+            </form>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

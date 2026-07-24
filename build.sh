@@ -2,7 +2,8 @@
 
 ANTLR_JAR="antlr4-4.13.1-complete.jar"
 GEN_DIR="FlaskGen"
-SAMPLE="samples/sample.txt"
+SAMPLE="official_input"
+# SAMPLE="samples/sample.txt"
 # SAMPLE="samples/sample_basic.txt"
 # SAMPLE="samples/sample_routes_nav.txt"
 # SAMPLE="samples/sample_for_loop.txt"

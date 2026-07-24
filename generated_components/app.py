@@ -55,6 +55,22 @@ def product_detail(id):
     backLabel = "Back to Products"
     return render_template('ProductDetail.html', backLabel=backLabel, product=product)
 
+@app.route('/product/edit/<int:id>', methods=['GET', 'POST'])
+def edit_product(id):
+    product = next((p for p in products_data if p["id"] == id), None)
+    if not product:
+        return "Product not found", 404
+    if request.method == "POST":
+        product["name"] = request.form["name"]
+        product["price"] = request.form["price"]
+        product["image"] = request.form["image"]
+        product["details"] = request.form["description"]
+        return redirect("/product/" + str(id))
+    editTitle = "Edit Product"
+    saveLabel = "Save Changes"
+    backLabel = "Back to Product"
+    return render_template('EditProduct.html', product=product, editTitle=editTitle, saveLabel=saveLabel, backLabel=backLabel)
+
 @app.route('/product/delete/<int:id>', methods=['POST'])
 def delete_product(id):
     global products_data

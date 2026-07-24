@@ -1,0 +1,9 @@
+out/
+*.class
+__pycache__/
+*.pyc
+.venv/
+.idea/
+PRESENTATION_GUIDE_AR.md
+FINAL_CHECKLIST_AR.md
+INTERVIEW_MEMORY_AR.md

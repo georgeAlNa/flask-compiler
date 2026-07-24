@@ -58,7 +58,19 @@ Application
         JinjaVariableNode(expression="backLabel")
         HtmlElementNode(tag="form", action="/product/delete/{{ product.id }}", method="post")
 
-    Generated Action Route
+    Generated Edit Route
+      RouteNode(route="/product/edit/<int:id>", function="edit_product", methods="GET,POST")
+      EditProductView
+        TemplateNode(content="<section> ...")
+        JinjaVariableNode(expression="editTitle")
+        JinjaVariableNode(expression="product.name")
+        JinjaVariableNode(expression="product.price")
+        JinjaVariableNode(expression="product.image")
+        JinjaVariableNode(expression="product.details")
+        JinjaVariableNode(expression="saveLabel")
+        JinjaVariableNode(expression="backLabel")
+
+    Generated Delete Route
       RouteNode(route="/product/delete/<int:id>", function="delete_product", methods="POST")
       DeleteProductView
 ```
@@ -87,6 +99,9 @@ Python -> Jinja Bindings:
 - `program.printJinjaAst()`
 - `program.printFullAst()`
 
-## DeleteProductView Note
+## Generated Action Views Note
 
-DeleteProductView is an action route. It does not generate `DeleteProduct.html` because it handles POST deletion and redirects to `/products`.
+`EditProductView` and `DeleteProductView` are added during code generation when product data is detected.
+
+- `EditProductView` generates `EditProduct.html`, `output/edit_product.html`, and the Flask route `/product/edit/<int:id>`.
+- `DeleteProductView` is an action route. It does not generate `DeleteProduct.html` because it handles POST deletion and redirects to `/products`.

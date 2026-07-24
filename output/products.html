@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="main-content">
+        <div class="grid">
+            
+            <div class="card">
+                <img class="product-image" src="https://via.placeholder.com/150" />
+                <h3>Laptop</h3>
+                <p class="price">1200</p>
+                <div>
+                    <a href="/product/1">View Details</a>
+                        <a href="/product/edit/1">Edit</a>
+                        <form method="post" action="/product/delete/1" class="inline-form">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                </div>
+            </div>
+            
+            <div class="card">
+                <img class="product-image" src="https://via.placeholder.com/150" />
+                <h3>Phone</h3>
+                <p class="price">800</p>
+                <div>
+                    <a href="/product/2">View Details</a>
+                        <a href="/product/edit/2">Edit</a>
+                        <form method="post" action="/product/delete/2" class="inline-form">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
